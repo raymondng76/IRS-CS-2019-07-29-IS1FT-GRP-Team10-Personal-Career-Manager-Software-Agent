@@ -54,11 +54,15 @@ def jobrecommend():
 #     """
 #     return render_template("jobcourserecommend.html")
 
-@app.route('/signup')
+@app.route('/signup', methods=['POST', 'GET'])
 def signup():
     """
     http://localhost:5000/signup
     """
+    print("SIGN UP")
+    if request.method == 'POST':
+        print("SIGN UP POST")
+        return render_template("signupthanks.html")
     return render_template("signup.html")
 
 @app.route('/signupthanks')
@@ -66,6 +70,7 @@ def signupthanks():
     """
     http://localhost:5000/signupthanks
     """
+    print("SIGN UP THANKS")
     return render_template("signupthanks.html")
 
 if __name__ == '__main__':
