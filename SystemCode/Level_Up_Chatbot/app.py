@@ -1,7 +1,9 @@
 from flask import Flask, request, make_response, jsonify, render_template
 import intents, utilities
+import sqlite3 as sql
 
 app = Flask(__name__)
+DATABASE = 'database.db'
 
 @app.route('/', methods=['POST'])
 def webhook():
@@ -22,21 +24,35 @@ def courserecommend():
     """
     http://localhost:5000/courserecommend
     """
-    return render_template("courserecommend.html")
+    conn = sql.connect(DATABASE)
+    conn.row_factory = sql.Row
+
+    cur = conn.cursor()
+    cur.execute("select * from course")
+
+    rows = cur.fetchall();
+    return render_template("courserecommend.html", rows=rows)
 
 @app.route('/jobrecommend')
 def jobrecommend():
     """
     http://localhost:5000/jobrecommend
     """
-    return render_template("jobrecommend.html")
+    conn = sql.connect(DATABASE)
+    conn.row_factory = sql.Row
 
-@app.route('/jobcourserecommend')
-def jobcourserecommend():
-    """
-    http://localhost:5000/jobcourserecommend
-    """
-    return render_template("jobcourserecommend.html")
+    cur = conn.cursor()
+    cur.execute("select * from job")
+
+    rows = cur.fetchall();
+    return render_template("jobrecommend.html", rows=rows)
+
+# @app.route('/jobcourserecommend')
+# def jobcourserecommend():
+#     """
+#     http://localhost:5000/jobcourserecommend
+#     """
+#     return render_template("jobcourserecommend.html")
 
 @app.route('/signup')
 def signup():
