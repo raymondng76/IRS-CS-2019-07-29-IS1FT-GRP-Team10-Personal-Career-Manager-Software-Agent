@@ -35,6 +35,7 @@ def questionaire(request):
         if form.is_valid():
             qform = form.save(commit=False)
             request.session['currPosition'] = str(form.cleaned_data['currPosition'])
+            # if user checks the have career aspiration checkbox
             if request.session['careeraspiration'] == True:
                 request.session['careerendpoint'] = str(form.cleaned_data['careerGoal'])
             else:
