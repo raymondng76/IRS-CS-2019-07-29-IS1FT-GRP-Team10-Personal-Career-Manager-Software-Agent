@@ -71,13 +71,12 @@ class CareerPathHeuristic(models.Model):
 
 class Job(models.Model):
     name = models.ForeignKey(CareerPosition, on_delete=models.CASCADE)
-    skillRequired = models.ForeignKey(Skill, on_delete=models.CASCADE)
+    skillRequired = models.ManyToManyField(Skill)
     minSalary = models.FloatField(default=0.0)
     maxSalary = models.FloatField(default=0.0)
     eduLvl = models.ForeignKey(EducationLevel, on_delete=models.CASCADE)
     title = models.CharField(max_length=256)
     URL = models.URLField()
-    description = models.CharField(max_length=5000)
     company = models.CharField(max_length=256)
 
     def __str__(self):
