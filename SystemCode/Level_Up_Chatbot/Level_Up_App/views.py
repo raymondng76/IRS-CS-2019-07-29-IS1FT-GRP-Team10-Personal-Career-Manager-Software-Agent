@@ -2,11 +2,13 @@ from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import View, CreateView, TemplateView, ListView, DetailView, FormView
+from django.views.decorators.csrf import csrf_exempt
 from Level_Up_App.forms import NewUserForm, QuestionaireForm
 from Level_Up_App.models import User, Questionaire, Course, Job, Skill
 from Level_Up_App.courserecommendationrules import SkillGapsFact, CourseRecommender
 from Level_Up_App.careerknowledgegraph import CareerPathKnowledgeGraph
 from Level_Up_App.CareerPathASTARSearch import searchCareerPath
+from Level_Up_App.library.df_response_lib import *
 # Create your views here.
 
 def index(request):
@@ -58,7 +60,7 @@ def result(request):
     jobs = Job.objects.all()
     courses = filtercourse()
     user = request.session['username']
-    careerendpoint = 'CIO'
+    careerendpoint = 'CIO' #TODO
     result_dict = {'username': user,
                 'careerendpoint': careerendpoint,
                 'courses': courses,
@@ -66,6 +68,32 @@ def result(request):
     return render(request, 'Level_Up_App/results.html', result_dict)
 
 def filtercourse(): # Sample filter code
-    skill = Skill.objects.get(name="C++")
+    skill = Skill.objects.get(name="C++") #TODO
     filteredcourse = Course.objects.filter(skillRequired__in=[skill])
     return filteredcourse
+
+# dialogflow webhook fulfillment
+@csrf_exempt
+def webhook(request):
+        # build a request object
+    req = json.loads(request.body)
+    # get action from json
+    action = req.get('queryResult').get('action')
+    # return a fulfillment message
+    if action == 'get_suggestion_chips':
+        # set fulfillment text
+        fulfillmentText = 'Suggestion chips Response from webhook'
+        aog = actions_on_google_response()
+        aog_sr = aog.simple_response([
+            [fulfillmentText, fulfillmentText, False]
+        ])
+        #create suggestion chips
+        aog_sc = aog.suggestion_chips(["suggestion1", "suggestion2"])
+        ff_response = fulfillment_response()
+        ff_text = ff_response.fulfillment_text(fulfillmentText)
+        ff_messages = ff_response.fulfillment_messages([aog_sr, aog_sc])
+        reply = ff_response.main_response(ff_text, ff_messages)
+    else:
+        reply = {'fulfillmentText': 'This is Django test response from webhook. Action or Intent not found'}
+    # return generated response
+    return JsonResponse(reply, safe=False)
