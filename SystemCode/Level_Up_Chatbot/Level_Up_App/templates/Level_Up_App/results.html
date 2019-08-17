@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+{% extends "Level_Up_App\base.html"%}
+{% load static %}
+{% block body_block %}
+  <div class="container">
+    <div class="jumbotron">
+      <h2>Career Roadmap</h2>
+    </div>
+    <div>
+      <h4>Hey {{username}}!, your recommended career aspiration is:</h4><br>
+      <h1 id="careerendpoint">{{careerendpoint}}</h1><br>
+    </div>
+    <div class="jobsrecommend">
+      {% if jobs %}
+      <table class="recommendtable table table-striped table-bordered table-sm">
+        <thead>
+          <tr>
+            <th></th>
+          </tr>
+        </thead>
+        {% for job in jobs %}
+          <tr>
+            <td> </td>
+          </tr>
+        {% endfor %}
+      </table>
+      {% else %}
+        <h3>No job recommendation available!</h3>
+      {% endif %}
+    </div>
+    <div class="courserecommend table table-striped table-bordered table-sm">
+      {% if courses %}
+        <table class="recommendtable">
+          <thead>
+            <tr>
+              <th>Course Code</th>
+              <th>Course Title</th>
+              <th>URL</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for course in courses %}
+            <tr>
+              <td>{{course.coursecode}}</td>
+              <td>{{course.title}}</td>
+              <td><a href="{{course.URL}}">Course Link</a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+
+      </table>
+      {% else %}
+        <h3>No course recommendation available!</h3>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

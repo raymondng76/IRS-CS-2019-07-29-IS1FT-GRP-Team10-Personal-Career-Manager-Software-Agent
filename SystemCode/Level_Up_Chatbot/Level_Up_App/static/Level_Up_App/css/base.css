@@ -1,0 +1,35 @@
+h1{
+  font-weight: bold;
+  color: green;
+  float: left;
+}
+#main_img{
+  float: right;
+  width: 100px;
+  height: 100px;
+}
+#userInput{
+  margin: 5px;
+}
+#userBtn{
+  margin: 20px 5px 5px 5px;
+}
+.questionaire{
+  color: blue;
+  width: 500px;
+  height: 500px;
+}
+#careerendpoint{
+  border: 5px outset black;
+  font-family: "Times New Roman", Times, serif;
+  font-weight: bold;
+  padding: 10px;
+  margin: auto;
+  align-content: center;
+}
+
+tbody{
+  height: 500px;
+  overflow: auto;
+  align-content: center;
+}

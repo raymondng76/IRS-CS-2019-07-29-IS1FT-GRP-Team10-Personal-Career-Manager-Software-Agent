@@ -1,0 +1,71 @@
+from django.shortcuts import render, redirect, reverse
+from django.http import HttpResponseRedirect
+from django.urls import reverse_lazy, reverse
+from django.views.generic import View, CreateView, TemplateView, ListView, DetailView, FormView
+from Level_Up_App.forms import NewUserForm, QuestionaireForm
+from Level_Up_App.models import User, Questionaire, Course, Job, Skill
+from Level_Up_App.courserecommendationrules import SkillGapsFact, CourseRecommender
+from Level_Up_App.careerknowledgegraph import CareerPathKnowledgeGraph
+from Level_Up_App.CareerPathASTARSearch import searchCareerPath
+# Create your views here.
+
+def index(request):
+    form = NewUserForm()
+    form_dict = {'userForm': form}
+    if request.method == 'POST':
+        form = NewUserForm(request.POST)
+        if form.is_valid():
+            request.session['username'] = form.cleaned_data['name']
+            request.session['careeraspiration'] = form.cleaned_data['careeraspiration']
+            form.save()
+            return redirect('Level_Up_App:questionaire')
+        else:
+            return redirect('Level_Up_App:index')
+    return render(request, 'Level_Up_App/index.html', form_dict)
+
+def questionaire(request):
+    form = QuestionaireForm()
+    username = request.session['username']
+    user = User.objects.get(name=username)
+    form_dict = {'username': username, 'questionaire': form}
+    if request.method == 'POST':
+        form = QuestionaireForm(request.POST)
+        if form.is_valid():
+            qform = form.save(commit=False)
+            request.session['currPosition'] = str(form.cleaned_data['currPosition'])
+            if request.session['careeraspiration'] == True:
+                request.session['careerendpoint'] = str(form.cleaned_data['careerGoal'])
+            else:
+                #TODO:replace with career end point from questionaire
+                request.session['careerendpoint'] = 'Chief Information Officer'
+            qform.user = user
+            qform.save()
+            return redirect('Level_Up_App:results')
+        else:
+            print("Error: Questionaire form invalid!")
+    return render(request, 'Level_Up_App/questionaire.html', context=form_dict)
+
+def result(request):
+    cpkg = CareerPathKnowledgeGraph()
+    careerkg = cpkg.getCareerKnowledgeMap()
+    careerph = cpkg.getCareerPathHeuristic()
+    currPos = request.session['currPosition']
+    endpt = request.session['careerendpoint']
+    print("CurrPos: " + str(currPos))
+    print("EndPt: " + str(endpt))
+    searchCareerPath(careerkg, careerph, currPos, endpt)
+
+    jobs = Job.objects.all()
+    courses = filtercourse()
+    user = request.session['username']
+    careerendpoint = 'CIO'
+    result_dict = {'username': user,
+                'careerendpoint': careerendpoint,
+                'courses': courses,
+                'jobs': jobs}
+    return render(request, 'Level_Up_App/results.html', result_dict)
+
+def filtercourse(): # Sample filter code
+    skill = Skill.objects.get(name="C++")
+    filteredcourse = Course.objects.filter(skillRequired__in=[skill])
+    return filteredcourse
