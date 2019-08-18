@@ -94,3 +94,10 @@ class GenericInfo(models.Model):
     def __str__(self):
         return """Title: [{}], eduLvl: [{}], salaryRange: [{}], minYears: [{}]
             """.format(self.title, self.eduLvl, self.salaryRange, self.minYears)
+
+class JobAndNextHigherPair(models.Model):
+    currentpos = models.ForeignKey(CareerPosition, related_name='%(class)s_currentpos', on_delete=models.CASCADE)
+    nextpos = models.ForeignKey(CareerPosition, related_name='%(class)s_nextpos', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return """CurrentPos: [{}], NextPos: [{}]""".format(self.currentpos, self.nextpos)

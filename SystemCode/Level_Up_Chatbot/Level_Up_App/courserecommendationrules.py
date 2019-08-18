@@ -1,6 +1,7 @@
 from pyknow import *
 from Level_Up_App.models import Course, Skill
 
+
 def getCourseSkillRequired(coursecode):
     course = Course.objects.get(coursecode=coursecode)
     skillreq = list()

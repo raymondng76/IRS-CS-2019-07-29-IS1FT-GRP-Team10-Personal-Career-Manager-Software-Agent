@@ -4,7 +4,7 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import View, CreateView, TemplateView, ListView, DetailView, FormView
 from django.views.decorators.csrf import csrf_exempt
 from Level_Up_App.forms import NewUserForm, QuestionaireForm
-from Level_Up_App.models import User, Questionaire, Course, Job, Skill
+from Level_Up_App.models import User, Questionaire, Course, Job, Skill, JobAndNextHigherPair
 from Level_Up_App.courserecommendationrules import SkillGapsFact, CourseRecommender, recommendedcourses
 from Level_Up_App.careerknowledgegraph import CareerPathKnowledgeGraph
 from Level_Up_App.CareerPathASTARSearch import searchCareerPath
@@ -49,6 +49,8 @@ def questionaire(request):
     return render(request, 'Level_Up_App/questionaire.html', context=form_dict)
 
 def result(request):
+    currPos = request.session['currPosition']
+    # Search Career End Point
     # cpkg = CareerPathKnowledgeGraph()
     # careerkg = cpkg.getCareerKnowledgeMap()
     # careerph = cpkg.getCareerPathHeuristic()
@@ -57,11 +59,15 @@ def result(request):
     # print("CurrPos: " + str(currPos))
     # print("EndPt: " + str(endpt))
     # searchCareerPath(careerkg, careerph, currPos, endpt)
-
-    jobs = Job.objects.all()
-    courses = filtercourse()
-    user = request.session['username']
     careerendpoint = 'CIO' #TODO
+
+    # Filter job recommendations
+    jobs = filterjobs(currPos)
+
+    # Filter course recommendation
+    courses = filtercourse()
+
+    user = request.session['username']
     result_dict = {'username': user,
                 'careerendpoint': careerendpoint,
                 'courses': courses,
@@ -81,6 +87,27 @@ def filtercourse():
     engine.declare(SkillGapsFact(skills=skills))
     engine.run()
     return recommendedcourses
+
+def filterjobs(currPos):
+    jobs = list()
+    currCareerPos = CareerPosition.objects.get(name=currPos)
+    careerpair = JobAndNextHigherPair.objects.get(currentpos=currCareerPos)
+    nextpos = getattr(careerpair, 'nextpos')
+    nextCareerPos = CareerPosition.objects.get(name=nextpos)
+
+    skillreq = getJobSkillRequired(nextCareerPos)
+    
+
+
+    return jobs
+
+def getJobSkillRequired(jobtitle):
+    skillreq = list()
+    careerpos = CareerPosition.objects.get(name=jobtitle)
+    filterCareerPos = CareerSkills.objects.get(careerpos=careerpos)
+    for skill in filterCareerPos.skillRequired.all():
+        skillreq.append(str(skill))
+    return skillreq
 
 # dialogflow webhook fulfillment
 @csrf_exempt

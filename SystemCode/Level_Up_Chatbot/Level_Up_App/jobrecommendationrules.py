@@ -1,4 +1,5 @@
 from pyknow import *
+from Level_Up_App.models import Job, Skill, CareerPosition, CareerSkills
 
 class SkillSetFact(Fact):
     """Fact input from derived career map"""
