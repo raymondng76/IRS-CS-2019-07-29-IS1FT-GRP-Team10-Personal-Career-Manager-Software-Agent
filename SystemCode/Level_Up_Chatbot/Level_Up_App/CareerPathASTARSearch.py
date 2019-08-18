@@ -47,5 +47,9 @@ def searchCareerPath(careergraph, careerheuristic, currjobtitle, careerendpoint)
         currentNode = nextNode
 
     print("Shortest Career Path Found is", candidateCareerPaths[index][0], "Years")
+    careerpath =[]
     for i in range(len(candidateCareerPaths[index])-2):
         print(candidateCareerPaths[index][i+2])
+        careerpath.append(candidateCareerPaths[index][i+2])
+
+    return (candidateCareerPaths[index][0], careerpath)
