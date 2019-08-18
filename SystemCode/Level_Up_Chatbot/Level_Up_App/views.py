@@ -5,7 +5,7 @@ from django.views.generic import View, CreateView, TemplateView, ListView, Detai
 from django.views.decorators.csrf import csrf_exempt
 from Level_Up_App.forms import NewUserForm, QuestionaireForm
 from Level_Up_App.models import User, Questionaire, Course, Job, Skill
-from Level_Up_App.courserecommendationrules import SkillGapsFact, CourseRecommender
+from Level_Up_App.courserecommendationrules import SkillGapsFact, CourseRecommender, recommendedcourses
 from Level_Up_App.careerknowledgegraph import CareerPathKnowledgeGraph
 from Level_Up_App.CareerPathASTARSearch import searchCareerPath
 from Level_Up_App.library.df_response_lib import *
@@ -49,14 +49,14 @@ def questionaire(request):
     return render(request, 'Level_Up_App/questionaire.html', context=form_dict)
 
 def result(request):
-    cpkg = CareerPathKnowledgeGraph()
-    careerkg = cpkg.getCareerKnowledgeMap()
-    careerph = cpkg.getCareerPathHeuristic()
-    currPos = request.session['currPosition']
-    endpt = request.session['careerendpoint']
-    print("CurrPos: " + str(currPos))
-    print("EndPt: " + str(endpt))
-    searchCareerPath(careerkg, careerph, currPos, endpt)
+    # cpkg = CareerPathKnowledgeGraph()
+    # careerkg = cpkg.getCareerKnowledgeMap()
+    # careerph = cpkg.getCareerPathHeuristic()
+    # currPos = request.session['currPosition']
+    # endpt = request.session['careerendpoint']
+    # print("CurrPos: " + str(currPos))
+    # print("EndPt: " + str(endpt))
+    # searchCareerPath(careerkg, careerph, currPos, endpt)
 
     jobs = Job.objects.all()
     courses = filtercourse()
@@ -68,10 +68,19 @@ def result(request):
                 'jobs': jobs}
     return render(request, 'Level_Up_App/results.html', result_dict)
 
-def filtercourse(): # Sample filter code
-    skill = Skill.objects.get(name="C++") #TODO
-    filteredcourse = Course.objects.filter(skillRequired__in=[skill])
-    return filteredcourse
+def filtercourse():
+    # skill = Skill.objects.get(name="C++") #TODO add career end point skills
+    skills = list()
+    skills.append('ARTIFICIAL INTELLIGENCE')
+    skills.append('MACHINE LEARNING')
+    skills.append('DEEP LEARNING')
+
+    # Declare course recommendation rules and build facts
+    engine = CourseRecommender()
+    engine.reset()
+    engine.declare(SkillGapsFact(skills=skills))
+    engine.run()
+    return recommendedcourses
 
 # dialogflow webhook fulfillment
 @csrf_exempt
