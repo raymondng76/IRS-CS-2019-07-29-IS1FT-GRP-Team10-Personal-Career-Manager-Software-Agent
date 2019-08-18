@@ -6,7 +6,7 @@ from Level_Up_App.CareerPathASTARSearch import *
 
 
 def getJobCompetency(jobtitle):
-    jobcompetency = []
+    jobcompetency = list()
     careerpos = CareerPosition.objects.get(name=jobtitle)
     filterCareerPos = CareerSkills.objects.get(careerpos=careerpos)
     for skill in filterCareerPos.skillRequired.all():
