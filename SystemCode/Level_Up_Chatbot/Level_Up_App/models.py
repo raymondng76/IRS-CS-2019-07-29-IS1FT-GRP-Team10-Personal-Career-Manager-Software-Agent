@@ -83,3 +83,14 @@ class Job(models.Model):
         return """Name: [{}],
                 title: [{}],
                 """.format(self.name, self.title)
+
+class GenericInfo(models.Model):
+    title = models.ForeignKey(CareerPosition, on_delete=models.CASCADE)
+    eduLvl = models.ForeignKey(EducationLevel, on_delete=models.CASCADE)
+    salaryRange = models.CharField(max_length=256)
+    minYears = models.IntegerField(default=0)
+    description = models.CharField(max_length=5000)
+
+    def __str__(self):
+        return """Title: [{}], eduLvl: [{}], salaryRange: [{}], minYears: [{}]
+            """.format(self.title, self.eduLvl, self.salaryRange, self.minYears)
