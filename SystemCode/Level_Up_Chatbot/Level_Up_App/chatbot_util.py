@@ -1,6 +1,8 @@
 from django.db.models import Count
 from Level_Up_App.models import CareerSkills, CareerPosition, Skill, Job, GenericInfo
 from Level_Up_App.genericjobinfo import *
+from Level_Up_App.careerknowledgegraph import *
+from Level_Up_App.CareerPathASTARSearch import *
 
 
 def getJobCompetency(jobtitle):
@@ -37,6 +39,12 @@ def getJobMinYearsExperience(jobtitle):
 def queryGenericInfo(jobtitle):
     careerpos = CareerPosition.objects.get(name=jobtitle)
     return GenericInfo.objects.get(title=careerpos)
+
+def getCareerPath(currentjobtitle, aspiredjobtitle):
+    cpkg = CareerPathKnowledgeGraph()
+    ckm = cpkg.getCareerKnowledgeMap()
+    cph = cpkg.getCareerPathHeuristic()
+    return searchCareerPath(ckm, cph, currentjobtitle, aspiredjobtitle)
 
 
 def getJobDescriptionTemp(jobtitle):
