@@ -74,41 +74,10 @@ def result(request):
                 'jobs': jobs}
     return render(request, 'Level_Up_App/results.html', result_dict)
 
-def filtercourse():
-    # skill = Skill.objects.get(name="C++") #TODO add career end point skills
-    skills = list()
-    skills.append('ARTIFICIAL INTELLIGENCE')
-    skills.append('MACHINE LEARNING')
-    skills.append('DEEP LEARNING')
 
-    # Declare course recommendation rules and build facts
-    engine = CourseRecommender()
-    engine.reset()
-    engine.declare(SkillGapsFact(skills=skills))
-    engine.run()
-    return recommendedcourses
-
-def filterjobs(currPos):
-    jobs = list()
-    currCareerPos = CareerPosition.objects.get(name=currPos)
-    careerpair = JobAndNextHigherPair.objects.get(currentpos=currCareerPos)
-    nextpos = getattr(careerpair, 'nextpos')
-    nextCareerPos = CareerPosition.objects.get(name=nextpos)
-
-    skillreq = getJobSkillRequired(nextCareerPos)
-    
-
-
-    return jobs
-
-def getJobSkillRequired(jobtitle):
-    skillreq = list()
-    careerpos = CareerPosition.objects.get(name=jobtitle)
-    filterCareerPos = CareerSkills.objects.get(careerpos=careerpos)
-    for skill in filterCareerPos.skillRequired.all():
-        skillreq.append(str(skill))
-    return skillreq
-
+# ************************
+# DialogFlow block : START
+# ************************
 # dialogflow webhook fulfillment
 @csrf_exempt
 def webhook(request):
@@ -134,3 +103,45 @@ def webhook(request):
         reply = {'fulfillmentText': 'This is Django test response from webhook. Action or Intent not found'}
     # return generated response
     return JsonResponse(reply, safe=False)
+# **********************
+# DialogFlow block : END
+# **********************
+
+
+# **********************
+# UTIL FUNCTIONS : START
+# **********************
+def filtercourse():
+    # skill = Skill.objects.get(name="C++") #TODO add career end point skills
+    skills = list()
+    skills.append('ARTIFICIAL INTELLIGENCE')
+    skills.append('MACHINE LEARNING')
+    skills.append('DEEP LEARNING')
+
+    # Declare course recommendation rules and build facts
+    engine = CourseRecommender()
+    engine.reset()
+    engine.declare(SkillGapsFact(skills=skills))
+    engine.run()
+    return recommendedcourses
+
+def filterjobs(currPos):
+    jobs = list()
+    currCareerPos = CareerPosition.objects.get(name=currPos)
+    careerpair = JobAndNextHigherPair.objects.get(currentpos=currCareerPos)
+    nextpos = getattr(careerpair, 'nextpos')
+    nextCareerPos = CareerPosition.objects.get(name=nextpos)
+
+    skillreq = getJobSkillRequired(nextCareerPos)
+    return jobs
+
+def getJobSkillRequired(jobtitle):
+    skillreq = list()
+    careerpos = CareerPosition.objects.get(name=jobtitle)
+    filterCareerPos = CareerSkills.objects.get(careerpos=careerpos)
+    for skill in filterCareerPos.skillRequired.all():
+        skillreq.append(str(skill))
+    return skillreq
+# **********************
+# UTIL FUNCTIONS : END
+# **********************
