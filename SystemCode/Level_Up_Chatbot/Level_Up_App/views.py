@@ -227,16 +227,16 @@ def webhook(request):
 
     # D_ElicitEmployDetails Intent
     if intent_name == "D_ElicitEmployDetails":
-        jobtitle = req["queryResult"]["parameters"]["jobtitle"]
+        jobtitle = req["queryResult"]["parameters"]["job_roles"]
         yearsInCurrentPosition = req["queryResult"]["parameters"]["duration"]
 
         if persona == "Jaded Employee" or persona == "Curious Explorer":
             #Lead to D_GetCareerPreferences Intent
             resp_text = "D_ElicitEmployDetails:JECE - What kind of job roles do you prefer? Management or technical track?"
-        if persona == "Unemployed Job Seeker" or persona == "Eager Learner":
+        elif persona == "Unemployed Job Seeker" or persona == "Eager Learner":
             #Lead to D_ElicitEmployDetails - yes Intent
             resp_text = "D_ElicitEmployDetails:UJS - I have noted your employment details. Next, would you share with me more about your competency?"
-        if persona == "Go Getter":
+        elif persona == "Go Getter":
             #Lead to D_GetAspiration Intent
             resp_text = "D_ElicitEmployDetails:GG - I have noted your employment details. Now, if given an opportunity, what do you aspire to be? CIO?"
     elif intent_name == "D_ElicitEmployDetails - yes":
@@ -259,7 +259,7 @@ def webhook(request):
     # D_GetAspiration Intent
     elif intent_name == "D_GetAspiration":
         #Lead to D_GetAspiration - yes Intent
-        aspiredjobtitle = req["queryResult"]["parameters"]["jobtitle"]
+        aspiredjobtitle = req["queryResult"]["parameters"]["jobroles"]
         resp_text = "D_GetAspiration - This is your career road map."
         #resp_text = getCareerPath(jobtitle, aspiredjobtitle)
         resp_text = resp_text + "I think I can value add more in terms of career advice. Would you like to share more about your competency?"
@@ -274,7 +274,7 @@ def webhook(request):
 # **********************
     ## cust_type intents - personas
     # jaded employee
-    if intent_name == "k_career_coach_cust_type_jaded":
+    elif intent_name == "k_career_coach_cust_type_jaded":
         persona = "Jaded Employee"
         resp_text = "I am sorry to hear that. I think I can help you. First, tell me more about your current position and work experience."
     # guide to cust_employment_details intent
@@ -345,11 +345,7 @@ def webhook(request):
     else:
         resp_text = "Unable to find a matching intent. Try again."
 
-    resp = {
-        "fulfillmentText": resp_text
-    }
 
-    return Response(json.dumps(resp), status=200, content_type="application/json")
 
 # **********************
 # DialogFlow block : Start Raymond and Zilong
@@ -359,6 +355,18 @@ def webhook(request):
         skillset = req["queryResult"]["parameters"]
         if persona == "Jaded Employee":
             pass
+        elif persona == "Curious Explorer" and persona == "EagerLearner":
+
+
+
+    resp = {
+        "fulfillmentText": resp_text
+    }
+
+    return Response(json.dumps(resp), status=200, content_type="application/json")
+
+
+
 
 
 # **********************
