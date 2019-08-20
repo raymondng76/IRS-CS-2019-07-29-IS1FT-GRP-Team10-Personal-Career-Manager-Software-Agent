@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, reverse
+from django.http import HttpResponse, JsonResponse
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import View, CreateView, TemplateView, ListView, DetailView, FormView
@@ -9,6 +10,7 @@ from Level_Up_App.courserecommendationrules import SkillGapsFact, CourseRecommen
 from Level_Up_App.careerknowledgegraph import CareerPathKnowledgeGraph
 from Level_Up_App.CareerPathASTARSearch import searchCareerPath
 from Level_Up_App.library.df_response_lib import *
+import json
 # Create your views here.
 
 def index(request):
@@ -64,8 +66,12 @@ def result(request):
     # Filter job recommendations
     jobs = filterjobs(currPos)
 
+    skills = list()
+    skills.append('ARTIFICIAL INTELLIGENCE')
+    skills.append('MACHINE LEARNING')
+    skills.append('DEEP LEARNING')
     # Filter course recommendation
-    courses = filtercourse()
+    courses = filtercourse(skills)
 
     user = request.session['username']
     result_dict = {'username': user,
@@ -74,39 +80,74 @@ def result(request):
                 'jobs': jobs}
     return render(request, 'Level_Up_App/results.html', result_dict)
 
+def signup(request):
+    if request.method == 'POST'
+        return redirect('Level_Up_App/signupthanks')
+    return render(request, 'Level_Up_App/signup.html')
+
+def signupthanks(request):
+    return render(request, 'Level_Up_App/signupthanks.html')
+
+def courserecommendresult(request):
+    courses = filtercourse(skills)
+    courses_dict = {'courses': courses}
+    return render(request, 'Level_Up_App/courserecommend.html', courses_dict)
+
+def jobrecommendresult(request):
+    pass
+
 
 # ************************
 # DialogFlow block : START
 # ************************
+
+# ************************
+#Global Variable
+persona = "NA"
+currentPosition = ""
+yearsOfWokringExperience = 0
+companyName = ""
+courseSkillRecommend = list()
+jobSkillRecommend = list()
+# ************************
+
 # dialogflow webhook fulfillment
 @csrf_exempt
 def webhook(request):
-        # build a request object
+    global persona
+    global currentPosition
+    global yearsOfWokringExperience
+    global companyName
+    global courseSkillRecommend
+    global jobSkillRecommend
+    # build a request object
     req = json.loads(request.body)
+    # req = request.get_json(silent=True, force=True)
     # get action from json
-    action = req.get('queryResult').get('action')
+    # action = req.get('queryResult').get('action')
+    intent_name = req["queryResult"]["intent"]["displayName"]
     # return a fulfillment message
-    if action == 'get_suggestion_chips':
-        # set fulfillment text
-        fulfillmentText = 'Suggestion chips Response from webhook'
-        aog = actions_on_google_response()
-        aog_sr = aog.simple_response([
-            [fulfillmentText, fulfillmentText, False]
-        ])
-        #create suggestion chips
-        aog_sc = aog.suggestion_chips(["suggestion1", "suggestion2"])
-        ff_response = fulfillment_response()
-        ff_text = ff_response.fulfillment_text(fulfillmentText)
-        ff_messages = ff_response.fulfillment_messages([aog_sr, aog_sc])
-        reply = ff_response.main_response(ff_text, ff_messages)
-    else:
-        reply = {'fulfillmentText': 'This is Django test response from webhook. Action or Intent not found'}
-    # return generated response
-    return JsonResponse(reply, safe=False)
+    # if action == 'get_suggestion_chips':
+    #     # set fulfillment text
+    #     fulfillmentText = 'Suggestion chips Response from webhook'
+    #     aog = actions_on_google_response()
+    #     aog_sr = aog.simple_response([
+    #         [fulfillmentText, fulfillmentText, False]
+    #     ])
+    #     #create suggestion chips
+    #     aog_sc = aog.suggestion_chips(["suggestion1", "suggestion2"])
+    #     ff_response = fulfillment_response()
+    #     ff_text = ff_response.fulfillment_text(fulfillmentText)
+    #     ff_messages = ff_response.fulfillment_messages([aog_sr, aog_sc])
+    #     reply = ff_response.main_response(ff_text, ff_messages)
+    # else:
+    #     reply = {'fulfillmentText': 'This is Django test response from webhook. Action or Intent not found'}
+    # # return generated response
+    # return JsonResponse(reply, safe=False)
 ###
 #Alfred
 ###
-
+    persona = "Curious Explorer"
     if intent_name == "A_GetCareerRoadMapInfo":
         persona = "Curious Explorer"
         resp_text = "The Career Road Map shows you a career path to achieve your career aspiration in the shortest time. It is generated based on anonymised data of real career advancement. Would you be interested to discover your career road map?"
@@ -226,7 +267,7 @@ def webhook(request):
 ####
 
     # D_ElicitEmployDetails Intent
-    if intent_name == "D_ElicitEmployDetails":
+    elif intent_name == "D_ElicitEmployDetails":
         jobtitle = req["queryResult"]["parameters"]["job_roles"]
         yearsInCurrentPosition = req["queryResult"]["parameters"]["duration"]
 
@@ -346,27 +387,16 @@ def webhook(request):
         resp_text = "Unable to find a matching intent. Try again."
 
 
-
+    return JsonResponse(resp, status=200, content_type="application/json", safe=False)
+    # return Response(json.dumps(resp), status=200, content_type="application/json")
 # **********************
 # DialogFlow block : Start Raymond and Zilong
 # **********************
 
-    if intent_name == "Wang_elicit_competence":
-        skillset = req["queryResult"]["parameters"]
-        if persona == "Jaded Employee":
-            pass
-        elif persona == "Curious Explorer" and persona == "EagerLearner":
-
-
-
-    resp = {
-        "fulfillmentText": resp_text
-    }
-
-    return Response(json.dumps(resp), status=200, content_type="application/json")
-
-
-
+    # elif intent_name == "Wang_elicit_competence":
+    #     skillset = req["queryResult"]["parameters"]
+    #     if persona == "Jaded Employee":
+    #         pass
 
 
 # **********************
@@ -377,12 +407,8 @@ def webhook(request):
 # **********************
 # UTIL FUNCTIONS : START
 # **********************
-def filtercourse():
+def filtercourse(skills):
     # skill = Skill.objects.get(name="C++") #TODO add career end point skills
-    skills = list()
-    skills.append('ARTIFICIAL INTELLIGENCE')
-    skills.append('MACHINE LEARNING')
-    skills.append('DEEP LEARNING')
 
     # Declare course recommendation rules and build facts
     engine = CourseRecommender()
