@@ -227,7 +227,7 @@ def webhook(request):
 
     # D_ElicitEmployDetails Intent
     if intent_name == "D_ElicitEmployDetails":
-        jobtitle = req["queryResult"]["parameters"]["jobroles"]
+        jobtitle = req["queryResult"]["parameters"]["job_roles"]
         yearsInCurrentPosition = req["queryResult"]["parameters"]["duration"]
 
         if persona == "Jaded Employee" or persona == "Curious Explorer":
