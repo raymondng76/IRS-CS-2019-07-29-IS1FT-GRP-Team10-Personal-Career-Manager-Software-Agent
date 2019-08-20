@@ -103,6 +103,89 @@ def webhook(request):
         reply = {'fulfillmentText': 'This is Django test response from webhook. Action or Intent not found'}
     # return generated response
     return JsonResponse(reply, safe=False)
+
+    
+# **********************
+# DialogFlow block : START_KENNETH
+# **********************
+    ## cust_type intents - personas
+    # jaded employee
+    if intent_name == "k_career_coach_cust_type_jaded":
+        persona = "Jaded Employee"
+        resp_text = "I am sorry to hear that. I think I can help you. First, tell me more about your current position and work experience."
+    # guide to cust_employment_details intent
+
+    # curious explorer    
+    elif intent_name == "k_career_coach_cust_type_explorer":
+        persona = "Curious Explorer"
+        resp_text = "The Career Road Map shows you a career path to achieve your career aspiration in the shortest time. It is generated based on anonymised data of real career advancement. Can I know more about your current employment?"
+    # guide to cust_employment_details intent
+
+    # Go Getter
+    elif intent_name == "k_career_coach_cust_type_gogetter":
+        persona = "Go Getter"
+        resp_text = "The Career Road Map shows you a career path to achieve your career aspiration in the shortest time. It is generated based on anonymised data of real career advancement. Do you have any career aspiration?"
+    # guide to cust_aspiration intent
+
+    # The Unemployed Job Seeker
+    elif intent_name == "k_career_coach_cust_type_unemployed":
+        persona = "The Unemployed Job Seeker"
+        resp_text = "Do not worry, we are here to help. /n Please help us to know more about your previous employment."
+    
+    # The Eager Learner
+    elif intent_name == "k_career_coach_cust_type_eagerlearner_job":
+        persona = "The Eager Learner"
+        resp_text = "Let's work together to improve ourselves. /n Please help us to know more about your previous employment."
+    
+
+
+    ## employment details intents
+    # from cust_type_jaded intent
+    elif intent_name == "k_career_coach_cust_employment_details":
+        currentPosition = req["queryResult"]["parameters"]["job_roles"]
+        yearsOfWokringExperience = req["queryResult"]["parameters"]["duration"]
+        if persona == "Jaded Employee":
+            resp_text = "I see that you have worked as $job_roles for $duration? Do you have any career aspiration?"
+        elif persona == "The Unemployed Job Seeker" or persona == "The Eager Learner":
+            # elicity competency
+            pass
+        else:
+            # show career roadmap
+            pass
+
+    ## cust_aspiration intents
+    # from cust_employment_details intent
+    elif intent_name == "k_career_coach_cust_aspiration_yes":
+        careerEndGoalPosition = req["queryResult"]["parameters"]["job_roles"]
+        if persona == "Jaded Employee" or persona == "Curious Explorer":
+            resp_text = "That's great, let us see how we can explore getting to $job_roles from where you are now. This is your career roadmap."
+            # show career roadmap
+        elif persona == "The Eager Learner":
+            resp_text = "That's great, let us see how we can explore getting to $job_roles from where you are now. This is your career roadmap."
+            # show career roadmap
+        elif persona == "The Unemployed Job Seeker"
+            # elicit competency
+    # guide to career_roadmap intent/engine
+
+    # from cust_employment details intent
+    elif intent_name == "k_career_coach_cust_aspiration-fallback":
+        resp_text = "Help me to answer a few questions and I can suggest a career goal for you! /n"
+        # trigger
+    
+    # trigger career pref 
+    elif intent_name == "k_career_pref_mgmt_tech_sales":
+        resp_text = "Help me to answer a few questions and I can suggest a career goal for you! /n"
+    
+    # catch all response
+    else:
+        resp_text = "Unable to find a matching intent. Try again."
+
+    resp = {
+        "fulfillmentText": resp_text
+    }
+
+    return Response(json.dumps(resp), status=200, content_type="application/json")
+
 # **********************
 # DialogFlow block : END
 # **********************
