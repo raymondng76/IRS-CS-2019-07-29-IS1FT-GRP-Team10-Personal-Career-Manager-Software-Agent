@@ -10,5 +10,6 @@ urlpatterns = [
     path('courserecommend/', views.courserecommendresult, name='courserecommend'),
     path('jobrecommend/', views.jobrecommendresult, name='jobrecommend'),
     path('signup/', views.signup, name='signup'),
-    path('signupthanks/', views.signupthanks, name='signupthanks')
+    path('signupthanks/', views.signupthanks, name='signupthanks'),
+    path('chatbot/', views.chatbot, name='chatbot')
 ]
