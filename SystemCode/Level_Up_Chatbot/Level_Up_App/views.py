@@ -66,8 +66,12 @@ def result(request):
     # Filter job recommendations
     jobs = filterjobs(currPos)
 
+    skills = list()
+    skills.append('ARTIFICIAL INTELLIGENCE')
+    skills.append('MACHINE LEARNING')
+    skills.append('DEEP LEARNING')
     # Filter course recommendation
-    courses = filtercourse()
+    courses = filtercourse(skills)
 
     user = request.session['username']
     result_dict = {'username': user,
@@ -76,14 +80,47 @@ def result(request):
                 'jobs': jobs}
     return render(request, 'Level_Up_App/results.html', result_dict)
 
+def signup(request):
+    if request.method == 'POST'
+        return redirect('Level_Up_App/signupthanks')
+    return render(request, 'Level_Up_App/signup.html')
+
+def signupthanks(request):
+    return render(request, 'Level_Up_App/signupthanks.html')
+
+def courserecommendresult(request):
+    courses = filtercourse(skills)
+    courses_dict = {'courses': courses}
+    return render(request, 'Level_Up_App/courserecommend.html', courses_dict)
+
+def jobrecommendresult(request):
+    pass
+
 
 # ************************
 # DialogFlow block : START
 # ************************
+
+# ************************
+#Global Variable
+persona = "NA"
+currentPosition = ""
+yearsOfWokringExperience = 0
+companyName = ""
+courseSkillRecommend = list()
+jobSkillRecommend = list()
+# ************************
+
 # dialogflow webhook fulfillment
 @csrf_exempt
 def webhook(request):
-        # build a request object
+    global persona
+    global currentPosition
+    global yearsOfWokringExperience
+    global companyName
+    global courseSkillRecommend
+    global jobSkillRecommend
+    # build a request object
     req = json.loads(request.body)
     # req = request.get_json(silent=True, force=True)
     # get action from json
@@ -373,12 +410,8 @@ def webhook(request):
 # **********************
 # UTIL FUNCTIONS : START
 # **********************
-def filtercourse():
+def filtercourse(skills):
     # skill = Skill.objects.get(name="C++") #TODO add career end point skills
-    skills = list()
-    skills.append('ARTIFICIAL INTELLIGENCE')
-    skills.append('MACHINE LEARNING')
-    skills.append('DEEP LEARNING')
 
     # Declare course recommendation rules and build facts
     engine = CourseRecommender()
