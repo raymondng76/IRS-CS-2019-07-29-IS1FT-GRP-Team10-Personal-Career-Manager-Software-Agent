@@ -107,7 +107,7 @@ def webhook(request):
 #Alfred
 ###
 
-if intent_name == "A_GetCareerRoadMapInfo":
+    if intent_name == "A_GetCareerRoadMapInfo":
         persona = "Curious Explorer"
         resp_text = "The Career Road Map shows you a career path to achieve your career aspiration in the shortest time. It is generated based on anonymised data of real career advancement. Would you be interested to discover your career road map?"
     elif intent_name == "A_GetCareerRoadMapInfo - yes":
@@ -174,7 +174,7 @@ if intent_name == "A_GetCareerRoadMapInfo":
     elif intent_name == "A_GetJobScope - yes":
         resp_text = "Great! First, I need to know what is your current position and how long you have been in it?"
     elif intent_name == "A_GetJobScope - no":
-        resp_text = "Okay what else can I do for you?"       
+        resp_text = "Okay what else can I do for you?"
     elif intent_name == "A_GetJobYears":
         persona = "Go Getter"
         jobInterestedIn = req["queryResult"]["parameters"]["jobtitle"]
@@ -183,14 +183,14 @@ if intent_name == "A_GetCareerRoadMapInfo":
     elif intent_name == "A_GetJobYears - yes":
         resp_text = "Great! First, I need to know what is your current position and how long you have been in it?"
     elif intent_name == "A_GetJobYears - no":
-        resp_text = "Okay what else can I do for you?"          
+        resp_text = "Okay what else can I do for you?"
     elif intent_name == "A_GetServicesInfo":
         persona = "Curious Explorer"
         resp_text = "I can help you develop a personalised career road map and help you look for suitable jobs and training courses. Would you like to give it a go?"
     elif intent_name == "A_GetServicesInfo - yes":
         resp_text = "Great! First, I need to know what is your current position and how long you have been in it?"
     elif intent_name == "A_GetServicesInfo - no":
-        resp_text = "Okay what else can I do for you?"     
+        resp_text = "Okay what else can I do for you?"
     elif intent_name == "A_LookforCareerPath":
         persona = "Curious Explorer"
         resp_text = "I can help you develop a personalised career road map. First, I need to know what is your current position and how long you have been in it?"
@@ -245,7 +245,7 @@ if intent_name == "A_GetCareerRoadMapInfo":
             resp_text = "D_ElicitEmployDetails - yes:UJSEL That's great. Based on the following list, please key in your relevant competencies."
     elif intent_name == "D_ElicitEmployDetails - no":
         resp_text = "D_ElicitEmployDetails - no - Erm, alright. Is there anything else that I can help you?"
-    
+
     # D_GetCareerPreferences Intent
     elif intent_name == "D_GetCareerPreferences":
         #Lead to D_GetAspiration Intent
@@ -255,7 +255,7 @@ if intent_name == "A_GetCareerRoadMapInfo":
         resp_text = "D_GetCareerPreferences - yes - Great to hear that. Based on the following list, please key in your relevant competencies."
     elif intent_name == "D_GetCareerPreferences - no":
         resp_text = "D_GetCareerPreferences - no - That's cool. Is there any help that I can render to you?"
-    
+
     # D_GetAspiration Intent
     elif intent_name == "D_GetAspiration":
         #Lead to D_GetAspiration - yes Intent
@@ -279,7 +279,7 @@ if intent_name == "A_GetCareerRoadMapInfo":
         resp_text = "I am sorry to hear that. I think I can help you. First, tell me more about your current position and work experience."
     # guide to cust_employment_details intent
 
-    # curious explorer    
+    # curious explorer
     elif intent_name == "k_career_coach_cust_type_explorer":
         persona = "Curious Explorer"
         resp_text = "The Career Road Map shows you a career path to achieve your career aspiration in the shortest time. It is generated based on anonymised data of real career advancement. Can I know more about your current employment?"
@@ -295,12 +295,12 @@ if intent_name == "A_GetCareerRoadMapInfo":
     elif intent_name == "k_career_coach_cust_type_unemployed":
         persona = "The Unemployed Job Seeker"
         resp_text = "Do not worry, we are here to help. /n Please help us to know more about your previous employment."
-    
+
     # The Eager Learner
     elif intent_name == "k_career_coach_cust_type_eagerlearner_job":
         persona = "The Eager Learner"
         resp_text = "Let's work together to improve ourselves. /n Please help us to know more about your previous employment."
-    
+
 
 
     ## employment details intents
@@ -327,19 +327,20 @@ if intent_name == "A_GetCareerRoadMapInfo":
         elif persona == "The Eager Learner":
             resp_text = "That's great, let us see how we can explore getting to $job_roles from where you are now. This is your career roadmap."
             # show career roadmap
-        elif persona == "The Unemployed Job Seeker"
+        elif persona == "The Unemployed Job Seeker":
             # elicit competency
+            pass
     # guide to career_roadmap intent/engine
 
     # from cust_employment details intent
     elif intent_name == "k_career_coach_cust_aspiration-fallback":
         resp_text = "Help me to answer a few questions and I can suggest a career goal for you! /n"
         # trigger
-    
-    # trigger career pref 
+
+    # trigger career pref
     elif intent_name == "k_career_pref_mgmt_tech_sales":
         resp_text = "Help me to answer a few questions and I can suggest a career goal for you! /n"
-    
+
     # catch all response
     else:
         resp_text = "Unable to find a matching intent. Try again."
@@ -349,6 +350,16 @@ if intent_name == "A_GetCareerRoadMapInfo":
     }
 
     return Response(json.dumps(resp), status=200, content_type="application/json")
+
+# **********************
+# DialogFlow block : Start Raymond and Zilong
+# **********************
+
+    if intent_name == "Wang_elicit_competence":
+        skillset = req["queryResult"]["parameters"]
+        if persona == "Jaded Employee":
+            pass
+
 
 # **********************
 # DialogFlow block : END
