@@ -81,7 +81,7 @@ def result(request):
     return render(request, 'Level_Up_App/results.html', result_dict)
 
 def signup(request):
-    if request.method == 'POST'
+    if request.method == 'POST':
         return redirect('Level_Up_App/signupthanks')
     return render(request, 'Level_Up_App/signup.html')
 
@@ -96,7 +96,8 @@ def courserecommendresult(request):
 def jobrecommendresult(request):
     pass
 
-
+def chatbot(request):
+    return render(request, 'Level_Up_App/chatbot.html')
 # ************************
 # DialogFlow block : START
 # ************************
@@ -382,22 +383,27 @@ def webhook(request):
     elif intent_name == "k_career_pref_mgmt_tech_sales":
         resp_text = "Help me to answer a few questions and I can suggest a career goal for you! /n"
 
+
+    # **********************
+    # DialogFlow block : Start Raymond and Zilong
+    # **********************
+
+    # trigger elicit competence
+    # elif intent_name == "Wang_elicit_competence":
+    #     skillset = req["queryResult"]["parameters"]
+    #     if persona == "Jaded Employee":
+
+
     # catch all response
     else:
         resp_text = "Unable to find a matching intent. Try again."
 
 
+
+
+
     return JsonResponse(resp, status=200, content_type="application/json", safe=False)
-    # return Response(json.dumps(resp), status=200, content_type="application/json")
-# **********************
-# DialogFlow block : Start Raymond and Zilong
-# **********************
-
-    # elif intent_name == "Wang_elicit_competence":
-    #     skillset = req["queryResult"]["parameters"]
-    #     if persona == "Jaded Employee":
-    #         pass
-
+# return Response(json.dumps(resp), status=200, content_type="application/json")
 
 # **********************
 # DialogFlow block : END
@@ -408,8 +414,6 @@ def webhook(request):
 # UTIL FUNCTIONS : START
 # **********************
 def filtercourse(skills):
-    # skill = Skill.objects.get(name="C++") #TODO add career end point skills
-
     # Declare course recommendation rules and build facts
     engine = CourseRecommender()
     engine.reset()
