@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, reverse
+from django.http import HttpResponse, JsonResponse
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import View, CreateView, TemplateView, ListView, DetailView, FormView
@@ -9,6 +10,7 @@ from Level_Up_App.courserecommendationrules import SkillGapsFact, CourseRecommen
 from Level_Up_App.careerknowledgegraph import CareerPathKnowledgeGraph
 from Level_Up_App.CareerPathASTARSearch import searchCareerPath
 from Level_Up_App.library.df_response_lib import *
+import json
 # Create your views here.
 
 def index(request):
@@ -83,30 +85,32 @@ def result(request):
 def webhook(request):
         # build a request object
     req = json.loads(request.body)
+    # req = request.get_json(silent=True, force=True)
     # get action from json
-    action = req.get('queryResult').get('action')
+    # action = req.get('queryResult').get('action')
+    intent_name = req["queryResult"]["intent"]["displayName"]
     # return a fulfillment message
-    if action == 'get_suggestion_chips':
-        # set fulfillment text
-        fulfillmentText = 'Suggestion chips Response from webhook'
-        aog = actions_on_google_response()
-        aog_sr = aog.simple_response([
-            [fulfillmentText, fulfillmentText, False]
-        ])
-        #create suggestion chips
-        aog_sc = aog.suggestion_chips(["suggestion1", "suggestion2"])
-        ff_response = fulfillment_response()
-        ff_text = ff_response.fulfillment_text(fulfillmentText)
-        ff_messages = ff_response.fulfillment_messages([aog_sr, aog_sc])
-        reply = ff_response.main_response(ff_text, ff_messages)
-    else:
-        reply = {'fulfillmentText': 'This is Django test response from webhook. Action or Intent not found'}
-    # return generated response
-    return JsonResponse(reply, safe=False)
+    # if action == 'get_suggestion_chips':
+    #     # set fulfillment text
+    #     fulfillmentText = 'Suggestion chips Response from webhook'
+    #     aog = actions_on_google_response()
+    #     aog_sr = aog.simple_response([
+    #         [fulfillmentText, fulfillmentText, False]
+    #     ])
+    #     #create suggestion chips
+    #     aog_sc = aog.suggestion_chips(["suggestion1", "suggestion2"])
+    #     ff_response = fulfillment_response()
+    #     ff_text = ff_response.fulfillment_text(fulfillmentText)
+    #     ff_messages = ff_response.fulfillment_messages([aog_sr, aog_sc])
+    #     reply = ff_response.main_response(ff_text, ff_messages)
+    # else:
+    #     reply = {'fulfillmentText': 'This is Django test response from webhook. Action or Intent not found'}
+    # # return generated response
+    # return JsonResponse(reply, safe=False)
 ###
 #Alfred
 ###
-
+    persona = "Curious Explorer"
     if intent_name == "A_GetCareerRoadMapInfo":
         persona = "Curious Explorer"
         resp_text = "The Career Road Map shows you a career path to achieve your career aspiration in the shortest time. It is generated based on anonymised data of real career advancement. Would you be interested to discover your career road map?"
@@ -226,7 +230,7 @@ def webhook(request):
 ####
 
     # D_ElicitEmployDetails Intent
-    if intent_name == "D_ElicitEmployDetails":
+    elif intent_name == "D_ElicitEmployDetails":
         jobtitle = req["queryResult"]["parameters"]["job_roles"]
         yearsInCurrentPosition = req["queryResult"]["parameters"]["duration"]
 
@@ -274,7 +278,7 @@ def webhook(request):
 # **********************
     ## cust_type intents - personas
     # jaded employee
-    if intent_name == "k_career_coach_cust_type_jaded":
+    elif intent_name == "k_career_coach_cust_type_jaded":
         persona = "Jaded Employee"
         resp_text = "I am sorry to hear that. I think I can help you. First, tell me more about your current position and work experience."
     # guide to cust_employment_details intent
@@ -349,16 +353,16 @@ def webhook(request):
         "fulfillmentText": resp_text
     }
 
-    return Response(json.dumps(resp), status=200, content_type="application/json")
-
+    return JsonResponse(resp, status=200, content_type="application/json", safe=False)
+    # return Response(json.dumps(resp), status=200, content_type="application/json")
 # **********************
 # DialogFlow block : Start Raymond and Zilong
 # **********************
 
-    if intent_name == "Wang_elicit_competence":
-        skillset = req["queryResult"]["parameters"]
-        if persona == "Jaded Employee":
-            pass
+    # elif intent_name == "Wang_elicit_competence":
+    #     skillset = req["queryResult"]["parameters"]
+    #     if persona == "Jaded Employee":
+    #         pass
 
 
 # **********************

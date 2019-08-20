@@ -7,5 +7,5 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('questionaire/', views.questionaire, name='questionaire'),
     path('results/', views.result, name='results'),
-    path('webhook/', views.webhook, name='webhook'),
+    
 ]
