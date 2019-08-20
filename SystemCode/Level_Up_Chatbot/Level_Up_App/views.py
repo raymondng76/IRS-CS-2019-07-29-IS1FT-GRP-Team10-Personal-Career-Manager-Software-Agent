@@ -227,7 +227,7 @@ if intent_name == "A_GetCareerRoadMapInfo":
 
     # D_ElicitEmployDetails Intent
     if intent_name == "D_ElicitEmployDetails":
-        jobtitle = req["queryResult"]["parameters"]["jobtitle"]
+        jobtitle = req["queryResult"]["parameters"]["jobroles"]
         yearsInCurrentPosition = req["queryResult"]["parameters"]["duration"]
 
         if persona == "Jaded Employee" or persona == "Curious Explorer":
@@ -259,7 +259,7 @@ if intent_name == "A_GetCareerRoadMapInfo":
     # D_GetAspiration Intent
     elif intent_name == "D_GetAspiration":
         #Lead to D_GetAspiration - yes Intent
-        aspiredjobtitle = req["queryResult"]["parameters"]["jobtitle"]
+        aspiredjobtitle = req["queryResult"]["parameters"]["jobroles"]
         resp_text = "D_GetAspiration - This is your career road map."
         #resp_text = getCareerPath(jobtitle, aspiredjobtitle)
         resp_text = resp_text + "I think I can value add more in terms of career advice. Would you like to share more about your competency?"
