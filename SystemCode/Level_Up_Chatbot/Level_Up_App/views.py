@@ -236,7 +236,7 @@ def webhook(request):
 
         if persona == "Jaded Employee" or persona == "Curious Explorer":
             #Lead to D_GetCareerPreferences Intent
-            resp_text = "D_ElicitEmployDetails:JECE - What kind of job roles do you prefer? Management or technical track?"
+            resp_text = "D_ElicitEmployDetails:JECE - I have noted on your employment details. Do you have any career aspiration?"
         elif persona == "Unemployed Job Seeker" or persona == "Eager Learner":
             #Lead to D_ElicitEmployDetails - yes Intent
             resp_text = "D_ElicitEmployDetails:UJS - I have noted your employment details. Next, would you share with me more about your competency?"
@@ -307,19 +307,19 @@ def webhook(request):
 
 
 
-    ## employment details intents
+    ## employment details intents merged in to D_Elicit_Employee_Details
     # from cust_type_jaded intent
-    elif intent_name == "k_career_coach_cust_employment_details":
-        currentPosition = req["queryResult"]["parameters"]["job_roles"]
-        yearsOfWokringExperience = req["queryResult"]["parameters"]["duration"]
-        if persona == "Jaded Employee":
-            resp_text = "I see that you have worked as $job_roles for $duration? Do you have any career aspiration?"
-        elif persona == "The Unemployed Job Seeker" or persona == "The Eager Learner":
-            # elicity competency
-            pass
-        else:
-            # show career roadmap
-            pass
+    # elif intent_name == "k_career_coach_cust_employment_details":
+    #     currentPosition = req["queryResult"]["parameters"]["job_roles"]
+    #     yearsOfWokringExperience = req["queryResult"]["parameters"]["duration"]
+    #     if persona == "Jaded Employee":
+    #         resp_text = "I see that you have worked as $job_roles for $duration? Do you have any career aspiration?"
+    #     elif persona == "The Unemployed Job Seeker" or persona == "The Eager Learner":
+    #         # elicity competency
+    #         pass
+    #     else:
+    #         # show career roadmap
+    #         pass
 
     ## cust_aspiration intents
     # from cust_employment_details intent
