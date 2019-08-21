@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from Level_Up_App.forms import NewUserForm, QuestionaireForm
 from Level_Up_App.models import User, Questionaire, Course, Job, Skill, JobAndNextHigherPair, CareerPathMap, CareerSkills
 from Level_Up_App.courserecommendationrules import SkillGapsFact, CourseRecommender, recommendedcourses
+from Level_Up_App.jobrecommendationrules import SkillSetFact, JobRecommender, recommendedjobs
 from Level_Up_App.careerknowledgegraph import CareerPathKnowledgeGraph
 from Level_Up_App.CareerPathASTARSearch import searchCareerPath
 from Level_Up_App.library.df_response_lib import *

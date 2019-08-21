@@ -1,5 +1,7 @@
 from django.db.models import Count
 from Level_Up_App.models import CareerSkills, CareerPosition, Skill, Job, GenericInfo, CareerPathMap
+from Level_Up_App.courserecommendationrules import CourseRecommender, SkillGapsFact, recommendedcourses
+from Level_Up_App.jobrecommendationrules import JobRecommender, SkillSetFact, recommendedjobs
 from Level_Up_App.genericjobinfo import *
 from Level_Up_App.careerknowledgegraph import *
 from Level_Up_App.CareerPathASTARSearch import *
@@ -49,37 +51,7 @@ def getCareerPath(currentjobtitle, aspiredjobtitle):
 #****************************************
 # Methods for elicit competence : START
 #****************************************
-def get_jadedemployee_elict_competence_qns(currPos, endGoal):
-    """
-        INPUT:
-        currPos = User current position
-        endGoal = User End Goal from Career Road Map
-        OUTPUT:
-        list of skill objects
-    """
-    return elicitcompetencewithendgoal(currPos, endGoal)
-
-def get_curiousexplorer_elict_competence_qns(currPos, endGoal):
-    """
-        INPUT:
-        currPos = User current position
-        endGoal = User End Goal from Career Road Map
-        OUTPUT:
-        list of skill objects
-    """
-    return elicitcompetencewithendgoal(currPos, endGoal)
-
-def get_gogetter_elict_competence_qns(currPos, endGoal):
-    """
-        INPUT:
-        currPos = User current position
-        endGoal = User End Goal from Career Road Map
-        OUTPUT:
-        list of skill objects
-    """
-    return elicitcompetencewithendgoal(currPos, endGoal)
-
-def elicitcompetencewithendgoal(currPos, endGoal):
+def elicit_competence_with_endgoal(currPos, endGoal):
     # Get career path
     cost, careerPath = getCareerPath(currPos, endGoal)
     # Get next pos from career path
@@ -87,44 +59,63 @@ def elicitcompetencewithendgoal(currPos, endGoal):
     # Get list of competencies to ask user
     return getListofCompetencetoAskUserWithCRoadMap(currPos, nextpos)
 
-def get_unemployedjobseeker_elict_competence_qns(currPos):
-    """
-        INPUT:
-        currPos = User current position
-        OUTPUT:
-        list of skill objects
-    """
+def elicit_competence_without_endgoal(currPos):
     return getListofCompetencetoAskUserWithoutCRoadMap(currPos)
-
-def get_eagerlearner_elict_competence_qns(currPos):
-    """
-        INPUT:
-        currPos = User current position
-        OUTPUT:
-        list of skill objects
-    """
-    return getListofCompetencetoAskUserWithoutCRoadMap(currPos)
-
 #****************************************
 # Methods for elicit competence : END
 #****************************************
 #****************************************
 # Methods for jobs recomendation : START
 #****************************************
-def get_jadedemployee_jobsrecommendation(currPos, userCompetence):
-    """
-        INPUT:
-        currPos = User current positon
-        userCompetence = list of user answered competence
-        OUTPUT:
-        list of recommended jobs
-    """
-    pass
+def jobsrecommendation_with_endgoal(currPos, endGoal, userCompetence):
+    if not userCompetence:
+        return list()
+    origialCompetenceList = elicit_competence_with_endgoal(currPos, endGoal)
+    origialCompetenceList.append(userCompetence)
+    return getJobRecommendation(origialCompetenceList)
 
+def jobsrecommendation_without_endgoal(currPos, userCompetence):
+    if not userCompetence:
+        return list()
+    origialCompetenceList = elicit_competence_without_endgoal(currPos)
+    origialCompetenceList.append(userCompetence)
+    return getJobRecommendation(origialCompetenceList)
+
+def getJobRecommendation(skillset):
+    engine = JobRecommender()
+    engine.reset()
+    engine.declare(SkillSetFact(skills=skillset))
+    engine.run()
+    return recommendedjobs
 #****************************************
 # Methods for jobs recommendation : END
 #****************************************
+#*****************************************
+# Methods for course recomendation : START
+#*****************************************
+def courserecommendation_with_endgoal(currPos, endGoal, userCompetence):
+    origialCompetenceList = elicit_competence_with_endgoal(currPos, endGoal)
+    if set(userCompetence) == set(origialCompetenceList):
+        return list()
+    remainList = [skills for skills in userCompetence if skills not in origialCompetenceList]
+    return getCourseRecommendation(remainList)
 
+def courserecommendation_without_endgoal(currPos, userCompetence):
+    origialCompetenceList = elicit_competence_without_endgoal(currPos)
+    if set(userCompetence) == set(origialCompetenceList):
+        return list()
+    remainList = [skills for skills in userCompetence if skills not in origialCompetenceList]
+    return getCourseRecommendation(remainList)
+
+def getCourseRecommendation(skillgap):
+    engine = CourseRecommender()
+    engine.reset()
+    engine.declare(SkillGapsFact(skills=skillgap))
+    engine.run()
+    return recommendedcourses
+#*****************************************
+# Methods for course recomendation : END
+#*****************************************
 def getListofCompetencetoAskUserWithoutCRoadMap(currPos): # Input is a string
     currSkillList = getCareerSkillList(currPos)
     nextSkillList = getCombinedSkillReqFromNextPos(currPos)
