@@ -5,7 +5,7 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import View, CreateView, TemplateView, ListView, DetailView, FormView
 from django.views.decorators.csrf import csrf_exempt
 from Level_Up_App.forms import NewUserForm, QuestionaireForm
-from Level_Up_App.models import User, Questionaire, Course, Job, Skill, JobAndNextHigherPair
+from Level_Up_App.models import User, Questionaire, Course, Job, Skill, JobAndNextHigherPair, CareerPathMap, CareerSkills
 from Level_Up_App.courserecommendationrules import SkillGapsFact, CourseRecommender, recommendedcourses
 from Level_Up_App.careerknowledgegraph import CareerPathKnowledgeGraph
 from Level_Up_App.CareerPathASTARSearch import searchCareerPath
@@ -77,7 +77,7 @@ def result(request):
     careerendpoint = 'CIO' #TODO
 
     # Filter job recommendations
-    jobs = filterjobs(currPos)
+    # jobs = filterjobs(currPos)
 
     skills = list()
     skills.append('ARTIFICIAL INTELLIGENCE')
@@ -391,12 +391,15 @@ def webhook(request):
     # **********************
 
     # trigger elicit competence
-    elif intent_name == "Wang_elicit_competence":
-        skillset = req["queryResult"]["parameters"]
-        skills = processIncomingSkillset(skillset)
-        if persona == "Jaded Employee" and persona == "Go Getter":
-            redirect(request, 'Level_Up_App:courserecommendresult')
-
+    # elif intent_name == "Wang_elicit_competence":
+    #     skillset = req["queryResult"]["parameters"]
+    #     #TODO: Find skill sets differences
+    #     skills = processIncomingSkillset(skillset)
+    #     if persona == "Jaded Employee" and persona == "Go Getter":
+    #         #TODO: How to pass this redirect as a button card?
+    #         redirect(request, 'Level_Up_App:courserecommendresult')
+    #     elif persona == "Curious Explorer" and persona == "The Unemployed Job Seeker" and persona == "The Eager Learner":
+    #         redirect(request, 'Level_Up_App:jobrecommendresult')
 
 
     # catch all response
@@ -415,7 +418,6 @@ def webhook(request):
 # DialogFlow intents : END
 # **********************
 
-
 # **********************
 # UTIL FUNCTIONS : START
 # **********************
@@ -427,29 +429,28 @@ def filtercourse(skills):
     engine.run()
     return recommendedcourses
 
-def filterjobs(currPos):
-    jobs = list()
-    currCareerPos = CareerPosition.objects.get(name=currPos)
-    careerpair = JobAndNextHigherPair.objects.get(currentpos=currCareerPos)
-    nextpos = getattr(careerpair, 'nextpos')
-    nextCareerPos = CareerPosition.objects.get(name=nextpos)
+def getJobSkillRequired(skills):
+    # Declare job recommendation rules and build facts
+    engine = JobRecommender()
+    engine.reset()
+    engine.declare(SkillSetFact(skills=skills))
+    engine.run()
+    return recommendedjobs
 
-    skillreq = getJobSkillRequired(nextCareerPos)
-    return jobs
 
-def getJobSkillRequired(jobtitle):
-    skillreq = list()
-    careerpos = CareerPosition.objects.get(name=jobtitle)
-    filterCareerPos = CareerSkills.objects.get(careerpos=careerpos)
-    for skill in filterCareerPos.skillRequired.all():
-        skillreq.append(str(skill))
-    return skillreq
 
-def processIncomingSkillset(skillset):
+def processIncomingSkillset(skillset): # Input is a
     userSkill=list()
     for skill in skillset:
         userSkill.append(skill.upper())
     return userSkill
+
+def aStarsearchwrapper(currPos, endpt):
+    cpkg = CareerPathKnowledgeGraph()
+    careerkg = cpkg.getCareerKnowledgeMap()
+    careerph = cpkg.getCareerPathHeuristic()
+    return searchCareerPath(careerkg, careerph, currPos, endpt)
+
 
 # **********************
 # UTIL FUNCTIONS : END

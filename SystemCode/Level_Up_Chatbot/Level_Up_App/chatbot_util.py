@@ -1,5 +1,5 @@
 from django.db.models import Count
-from Level_Up_App.models import CareerSkills, CareerPosition, Skill, Job, GenericInfo
+from Level_Up_App.models import CareerSkills, CareerPosition, Skill, Job, GenericInfo, CareerPathMap
 from Level_Up_App.genericjobinfo import *
 from Level_Up_App.careerknowledgegraph import *
 from Level_Up_App.CareerPathASTARSearch import *
@@ -46,6 +46,113 @@ def getCareerPath(currentjobtitle, aspiredjobtitle):
     cph = cpkg.getCareerPathHeuristic()
     return searchCareerPath(ckm, cph, currentjobtitle, aspiredjobtitle)
 
+#****************************************
+# Methods for elicit competence : START
+#****************************************
+def get_jadedemployee_elict_competence_qns(currPos, endGoal):
+    """
+        INPUT:
+        currPos = User current position
+        endGoal = User End Goal from Career Road Map
+        OUTPUT:
+        list of skill objects
+    """
+    return elicitcompetencewithendgoal(currPos, endGoal)
+
+def get_curiousexplorer_elict_competence_qns(currPos, endGoal):
+    """
+        INPUT:
+        currPos = User current position
+        endGoal = User End Goal from Career Road Map
+        OUTPUT:
+        list of skill objects
+    """
+    return elicitcompetencewithendgoal(currPos, endGoal)
+
+def get_gogetter_elict_competence_qns(currPos, endGoal):
+        """
+            INPUT:
+            currPos = User current position
+            endGoal = User End Goal from Career Road Map
+            OUTPUT:
+            list of skill objects
+        """
+    return elicitcompetencewithendgoal(currPos, endGoal)
+
+def elicitcompetencewithendgoal(currPos, endGoal):
+    # Get career path
+    _, careerPath = getCareerPath(currPos, endGoal)
+    # Get next pos from career path
+    nextpos = careerPath[1]
+    # Get list of competencies to ask user
+    return getListofCompetencetoAskUserWithCRoadMap(currPos, nextpos)
+
+def get_unemployedjobseeker_elict_competence_qns(currPos):
+        """
+            INPUT:
+            currPos = User current position
+            OUTPUT:
+            list of skill objects
+        """
+    return getListofCompetencetoAskUserWithoutCRoadMap(currPos)
+
+def get_eagerlearner_elict_competence_qns(currPos):
+        """
+            INPUT:
+            currPos = User current position
+            OUTPUT:
+            list of skill objects
+        """
+    return getListofCompetencetoAskUserWithoutCRoadMap(currPos)
+
+#****************************************
+# Methods for elicit competence : END
+#****************************************
+
+def getListofCompetencetoAskUserWithoutCRoadMap(currPos): # Input is a string
+    currSkillList = getCareerSkillList(currPos)
+    print(f'CurrSkillList: {currSkillList}')
+    nextSkillList = getCombinedSkillReqFromNextPos(currPos)
+    print(f'nextSkillList: {nextSkillList}')
+    return [skills for skills in nextSkillList if skills not in currSkillList] # This is a list of skills to ask user
+
+def getListofCompetencetoAskUserWithCRoadMap(currPos, nextPos): # Both input are strings
+    currSkillList = getCareerSkillList(currPos)
+    nextposSkillList = getCareerSkillList(nextPos)
+    return [skills for skills in nextposSkillList if skills not in currSkillList] # This is a list of skills to ask user
+
+def getCareerSkillList(pos): # Input is a string
+    careerpos = CareerPosition.objects.get(name=pos)
+    careerSkills = CareerSkills.objects.get(careerpos=careerpos)
+    skillList = list()
+    for skill in careerSkills.skillRequired.all():
+        skillList.append(skill)
+    return skillList # This is a list of all the skills required for this position
+
+def getCombinedSkillReqFromNextPos(currPos): #Input is a string
+    # Get combined list of next pos
+    nextposlist = getCombinedListofNextPos(currPos)
+    nextposskilllist = list()
+    for pos in nextposlist:
+        careerSkills = CareerSkills.objects.get(careerpos=pos)
+        for cs in careerSkills.skillRequired.all():
+            nextposskilllist.append(cs)
+    return nextposskilllist # This is a list of skills
+
+def getCombinedListofNextPos(currPos): # Input is string
+    # Get career path map
+    careerPathMap = getCareerPathMap(currPos)
+    nextposlist = list()
+    for cp in careerPathMap:
+        nextposlist.append(cp.nextpos)
+    return nextposlist # This is a list of all next positions available
+
+def getCareerPathMap(currPos): # Input is string
+    # Get current pos object
+    currCareerPos = CareerPosition.objects.get(name=currPos)
+    # Get career path map object filter by career pos object
+    careerPath = CareerPathMap.objects.filter(initialpos=currCareerPos)
+    return careerPath # This is a queryset of careerpath
 
 def getJobDescriptionTemp(jobtitle):
     title = jobtitle.lower()
