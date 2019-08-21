@@ -314,7 +314,7 @@ def webhook(request):
         # call function and return Careerpath getCareerPath(currentPosition, careerEndGoalPosition)
         resp_text = "D_GetCareerPreferences - yes - Great to hear that. Based on the role, perhaps you can share some of your competencies with me we can check where we should be going next."
     elif intent_name == "K_GetCareerPref - no":
-        resp_text = "D_GetCareerPreferences - no - That's cool. Is there any help that I can render to you?"
+        resp_text = "D_GetCareerPreferences - no - I'm sorry I cannot serve you better today we are still upgrading this function. Is there any help that I can render to you?"
 
 
     # Get Aspiration Intent Combined
@@ -322,8 +322,17 @@ def webhook(request):
         #Lead to D_GetAspiration - yes Intent
         careerEndGoalPosition = req["queryResult"]["parameters"]["job_roles"]
         resp_text = "D_GetAspiration - This is your career road map."
-        # call function and return Careerpath getCareerPath(currentPosition, careerEndGoalPosition)
-        resp_text = resp_text + "I think I can value add more in terms of career advice. Would you like to share more about your competency?"
+        # getCareerPath(currentPosition, careerEndGoalPosition)
+        # print CareerRoadMap as Card
+        if persona == "Jaded Employee" or persona == "Curious Explorer" or persona == "Go Getter":
+            # to elicit competency currentSkillSet = get_jadedemployee_elict_competence_qns(currentPosition, careerEndGoalPosition)
+            resp_text = resp_text + "I think I can value add more in terms of career advice. Can I check with you if you have this list of competencies: " #+ currentSkillSet
+        else:
+            # call elicit_competence_qns_without roadmap
+            # don't call....
+            pass
+
+    ## currently not used
     elif intent_name == "D_GetAspiration - yes":
         #Lead to Competency Intent
         resp_text = "D_GetAspiration - yes - Great to hear that. Based on the following list, please key in your relevant competencies."
@@ -333,7 +342,9 @@ def webhook(request):
     # Elicit Competencies Intent
     elif intent_name == "Wang_elicit_comp":
         currentSkillSet = req["queryResult"]["parameters"]['skills']
-        # call function and return jobs matching currentSkillSet
+        # jobSkillRecommend = get_jadedemployee_jobsrecommendation(currentPosition, currentSkillSet) and return jobs matching current skills
+        # if jobSkillRecommend == []:
+        #   resp_text = "You are doing great with your skills. We currently have nothing for you. Is there something else I can help with?"
         if persona == "Curious Explorer" or persona == "Eager Learner":
             resp_text = "That's some awesome skills you have, here are some courses that might be interesting for you."
             resp_text = resp_text + "I think there are some jobs waiting for talented people like you. Would you be interested to find out more?"
@@ -390,7 +401,7 @@ def webhook(request):
     # **********************
     # DialogFlow block : Start Raymond and Zilong
     # **********************
-
+    # COMBINED INTO ABOVE INTENTS
     # trigger elicit competence
     # elif intent_name == "Wang_elicit_competence":
     #     skillset = req["queryResult"]["parameters"]
