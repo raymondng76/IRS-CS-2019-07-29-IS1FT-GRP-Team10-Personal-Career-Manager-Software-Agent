@@ -70,50 +70,64 @@ def get_curiousexplorer_elict_competence_qns(currPos, endGoal):
     return elicitcompetencewithendgoal(currPos, endGoal)
 
 def get_gogetter_elict_competence_qns(currPos, endGoal):
-        """
-            INPUT:
-            currPos = User current position
-            endGoal = User End Goal from Career Road Map
-            OUTPUT:
-            list of skill objects
-        """
+    """
+        INPUT:
+        currPos = User current position
+        endGoal = User End Goal from Career Road Map
+        OUTPUT:
+        list of skill objects
+    """
     return elicitcompetencewithendgoal(currPos, endGoal)
 
 def elicitcompetencewithendgoal(currPos, endGoal):
     # Get career path
-    _, careerPath = getCareerPath(currPos, endGoal)
+    cost, careerPath = getCareerPath(currPos, endGoal)
     # Get next pos from career path
     nextpos = careerPath[1]
     # Get list of competencies to ask user
     return getListofCompetencetoAskUserWithCRoadMap(currPos, nextpos)
 
 def get_unemployedjobseeker_elict_competence_qns(currPos):
-        """
-            INPUT:
-            currPos = User current position
-            OUTPUT:
-            list of skill objects
-        """
+    """
+        INPUT:
+        currPos = User current position
+        OUTPUT:
+        list of skill objects
+    """
     return getListofCompetencetoAskUserWithoutCRoadMap(currPos)
 
 def get_eagerlearner_elict_competence_qns(currPos):
-        """
-            INPUT:
-            currPos = User current position
-            OUTPUT:
-            list of skill objects
-        """
+    """
+        INPUT:
+        currPos = User current position
+        OUTPUT:
+        list of skill objects
+    """
     return getListofCompetencetoAskUserWithoutCRoadMap(currPos)
 
 #****************************************
 # Methods for elicit competence : END
 #****************************************
+#****************************************
+# Methods for jobs recomendation : START
+#****************************************
+def get_jadedemployee_jobsrecommendation(currPos, userCompetence):
+    """
+        INPUT:
+        currPos = User current positon
+        userCompetence = list of user answered competence
+        OUTPUT:
+        list of recommended jobs
+    """
+    pass
+
+#****************************************
+# Methods for jobs recommendation : END
+#****************************************
 
 def getListofCompetencetoAskUserWithoutCRoadMap(currPos): # Input is a string
     currSkillList = getCareerSkillList(currPos)
-    print(f'CurrSkillList: {currSkillList}')
     nextSkillList = getCombinedSkillReqFromNextPos(currPos)
-    print(f'nextSkillList: {nextSkillList}')
     return [skills for skills in nextSkillList if skills not in currSkillList] # This is a list of skills to ask user
 
 def getListofCompetencetoAskUserWithCRoadMap(currPos, nextPos): # Both input are strings
