@@ -11,6 +11,7 @@ from Level_Up_App.careerknowledgegraph import CareerPathKnowledgeGraph
 from Level_Up_App.CareerPathASTARSearch import searchCareerPath
 from Level_Up_App.library.df_response_lib import *
 import json
+from Level_Up_App.chatbot_util import *
 
 ### Global Variables
 persona = ""
@@ -172,14 +173,14 @@ def webhook(request):
     elif intent_name == "A_GetCareerRoadMapInfo - no":
         resp_text = "Okay what else can I do for you?"
     elif intent_name == "A_GetHighestDemandJob":
-        #jobtitle = getHighestDemandJob()
+        jobtitle = getHighestDemandJob()
         resp_text =  f"Currently the highest demand job is {jobtitle}"
 
     # Persona Go Getter
     elif intent_name == "A_GetJobCompetency":
         persona = "Go Getter"
-        jobInterestedIn = req["queryResult"]["parameters"]["jobtitle"]
-        #competency = getJobCompentency(jobInterestedIn)
+        jobInterestedIn = req["queryResult"]["parameters"]["job_roles"]
+        competency = getJobCompetency(jobInterestedIn)
         resp_text =  f"{jobInterestedIn} requires the following competencies: {competency}. Would you be interested to see a road map on how to get there?"
     elif intent_name == "A_GetJobCompetency - yes":
         resp_text = "Great! First, I need to know what is your current position and how long you have been in it?"
@@ -187,17 +188,13 @@ def webhook(request):
         resp_text = "Okay what else can I do for you?"
     elif intent_name == "A_GetJobDifference":
         persona = "Go Getter"
-        jobtitle1 = req["queryResult"]["parameters"]["jobtitle1"]
-        jobtitle2 = req["queryResult"]["parameters"]["jobtitle2"]
-        print(jobtitle1)
-        print(jobtitle2)
+        jobtitle1 = req["queryResult"]["parameters"]["job_roles1"]
+        jobtitle2 = req["queryResult"]["parameters"]["job_roles2"]
         jd1 = getJobDescription(jobtitle1)
         jd2 = getJobDescription(jobtitle2)
         resp_text = f"{jobtitle1} \n {jd1} \n {jobtitle2} \n {jd2} \n Which position are you more interested in?"
-        #getJobDescription(job1)
-        #getJobDescription(job2)
     elif intent_name == "A_GetJobDifference - custom":
-        jobInterestedIn = req["queryResult"]["parameters"]["jobtitle"]
+        jobInterestedIn = req["queryResult"]["parameters"]["job_roles"]
         resp_text = "I see, would you like me to show you a road map on how you can get there?"
     elif intent_name == "A_GetJobDifference - custom - yes":
         resp_text = "Great! First, I need to know what is your current position and how long you have been in it?"
@@ -205,8 +202,8 @@ def webhook(request):
         resp_text = "Okay what else can I do for you?"
     elif intent_name == "A_GetJobEducation":
         persona = "Go Getter"
-        jobInterestedIn = req["queryResult"]["parameters"]["jobtitle"]
-        #education = getJobEducationLevel(jobInterestedIn)
+        jobInterestedIn = req["queryResult"]["parameters"]["job_roles"]
+        education = getJobEducationLevel(jobInterestedIn)
         resp_text =  f"{jobInterestedIn} requires {education}. Would you be interested to see a road map on how to get there?"
     elif intent_name == "A_GetJobEducation - yes":
         resp_text = "Great! First, I need to know what is your current position and how long you have been in it?"
@@ -214,21 +211,21 @@ def webhook(request):
         resp_text = "Okay what else can I do for you?"
     elif intent_name == "A_GetJobPath":
         persona = "Go Getter"
-        jobInterestedIn = req["queryResult"]["parameters"]["jobtitle"]
+        jobInterestedIn = req["queryResult"]["parameters"]["job_roles"]
         resp_text = "I can help you with that! First, I need to know what is your current position and how long you have been in it?"
     elif intent_name == "A_GetJobSalary":
         persona = "Go Getter"
-        jobInterestedIn = req["queryResult"]["parameters"]["jobtitle"]
-        #salary = getJobSalary(jobInterestedIn)
-        #resp_text = f"On average, {jobInterestedIn} earns {salary} a month. Would you be interested to see a road map on how to get there?"
+        jobInterestedIn = req["queryResult"]["parameters"]["job_roles"]
+        salary = getJobSalary(jobInterestedIn)
+        resp_text = f"On average, {jobInterestedIn} earns {salary} a month. Would you be interested to see a road map on how to get there?"
     elif intent_name == "A_GetJobSalary - yes":
         resp_text = "Great! First, I need to know what is your current position and how long you have been in it?"
     elif intent_name == "A_GetJobSalary - no":
         resp_text = "Okay what else can I do for you?"
     elif intent_name == "A_GetJobScope":
         persona = "Go Getter"
-        jobInterestedIn = req["queryResult"]["parameters"]["jobtitle"]
-        #jd = getJobDescription(jobInterestedIn)
+        jobInterestedIn = req["queryResult"]["parameters"]["job_roles"]
+        jd = getJobDescription(jobInterestedIn)
         resp_text = f"Below is the job description of a {jobInterestedIn}: \n {jd}. \n Would you be interested to see a road map on how to get there?"
     elif intent_name == "A_GetJobScope - yes":
         resp_text = "Great! First, I need to know what is your current position and how long you have been in it?"
@@ -236,8 +233,8 @@ def webhook(request):
         resp_text = "Okay what else can I do for you?"
     elif intent_name == "A_GetJobYears":
         persona = "Go Getter"
-        jobInterestedIn = req["queryResult"]["parameters"]["jobtitle"]
-        #years = getJobMinYearsExperience(jobInterestedIn)
+        jobInterestedIn = req["queryResult"]["parameters"]["job_roles"]
+        years = getJobMinYearsExperience(jobInterestedIn)
         resp_text =  f"{jobInterestedIn} typically requires {years} years of experience. Would you be interested to see a road map on how to get there?"
     elif intent_name == "A_GetJobYears - yes":
         resp_text = "Great! First, I need to know what is your current position and how long you have been in it?"
