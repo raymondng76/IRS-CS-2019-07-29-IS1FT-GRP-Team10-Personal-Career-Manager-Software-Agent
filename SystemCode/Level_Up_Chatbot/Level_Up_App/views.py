@@ -77,8 +77,12 @@ def result(request):
     # Filter job recommendations
     jobs = filterjobs(currPos)
 
+    skills = list()
+    skills.append('ARTIFICIAL INTELLIGENCE')
+    skills.append('MACHINE LEARNING')
+    skills.append('DEEP LEARNING')
     # Filter course recommendation
-    courses = filtercourse()
+    courses = filtercourse(skills)
 
     user = request.session['username']
     result_dict = {'username': user,
@@ -87,14 +91,48 @@ def result(request):
                 'jobs': jobs}
     return render(request, 'Level_Up_App/results.html', result_dict)
 
+def signup(request):
+    if request.method == 'POST':
+        return redirect('Level_Up_App/signupthanks')
+    return render(request, 'Level_Up_App/signup.html')
 
+def signupthanks(request):
+    return render(request, 'Level_Up_App/signupthanks.html')
+
+def courserecommendresult(request):
+    courses = filtercourse(skills)
+    courses_dict = {'courses': courses}
+    return render(request, 'Level_Up_App/courserecommend.html', courses_dict)
+
+def jobrecommendresult(request):
+    pass
+
+def chatbot(request):
+    return render(request, 'Level_Up_App/chatbot.html')
 # ************************
 # DialogFlow block : START
 # ************************
+
+# ************************
+#Global Variable
+persona = "NA"
+currentPosition = ""
+yearsOfWokringExperience = 0
+companyName = ""
+courseSkillRecommend = list()
+jobSkillRecommend = list()
+# ************************
+
 # dialogflow webhook fulfillment
 @csrf_exempt
 def webhook(request):
-        # build a request object
+    global persona
+    global currentPosition
+    global yearsOfWokringExperience
+    global companyName
+    global courseSkillRecommend
+    global jobSkillRecommend
+    # build a request object
     req = json.loads(request.body)
     # req = request.get_json(silent=True, force=True)
     # get action from json
@@ -359,12 +397,28 @@ def webhook(request):
     elif intent_name == "k_career_pref_mgmt_tech_sales":
         resp_text = "Help me to answer a few questions and I can suggest a career goal for you! /n"
 
+
+    # **********************
+    # DialogFlow block : Start Raymond and Zilong
+    # **********************
+
+    # trigger elicit competence
+    # elif intent_name == "Wang_elicit_competence":
+    #     skillset = req["queryResult"]["parameters"]
+    #     if persona == "Jaded Employee":
+
+
     # catch all response
     else:
         resp_text = "Unable to find a matching intent. Try again."
+
     resp = {"fulfillmentText": resp_text}
     return JsonResponse(resp, status=200, content_type="application/json", safe=False)
     # return Response(json.dumps(resp), status=200, content_type="application/json")
+
+
+   # return JsonResponse(resp, status=200, content_type="application/json", safe=False)
+# return Response(json.dumps(resp), status=200, content_type="application/json")
 
 # **********************
 # DialogFlow intents : END
@@ -374,13 +428,7 @@ def webhook(request):
 # **********************
 # UTIL FUNCTIONS : START
 # **********************
-def filtercourse():
-    # skill = Skill.objects.get(name="C++") #TODO add career end point skills
-    skills = list()
-    skills.append('ARTIFICIAL INTELLIGENCE')
-    skills.append('MACHINE LEARNING')
-    skills.append('DEEP LEARNING')
-
+def filtercourse(skills):
     # Declare course recommendation rules and build facts
     engine = CourseRecommender()
     engine.reset()
