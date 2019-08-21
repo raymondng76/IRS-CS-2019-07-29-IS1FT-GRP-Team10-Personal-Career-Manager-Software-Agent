@@ -334,8 +334,12 @@ def webhook(request):
     elif intent_name == "Wang_elicit_comp":
         currentSkillSet = req["queryResult"]["parameters"]['skills']
         # call function and return jobs matching currentSkillSet
-        resp_text = "That's a great set of skills, here are some jobs you might find interesting."
-        resp_text = resp_text + "I think I can show you some courses that might help improve you skillsets too. Would you be interested to find out more?"
+        if persona == "Curious Explorer" or persona == "Eager Learner":
+            resp_text = "That's some awesome skills you have, here are some courses that might be interesting for you."
+            resp_text = resp_text + "I think there are some jobs waiting for talented people like you. Would you be interested to find out more?"
+        else:
+            resp_text = "That's a great set of skills, here are some jobs you might find interesting."
+            resp_text = resp_text + "I think I can show you some courses that might help improve you skillsets too. Would you be interested to find out more?"
     # Follow up to Jobs Recommendation
     elif intent_name == "Wang_elicit_comp - yes":
         resp_text = "Here are some courses that will help improve your current standing and further your knowledge."
