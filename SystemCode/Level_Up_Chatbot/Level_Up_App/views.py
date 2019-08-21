@@ -22,6 +22,8 @@ jobInterestedIn = ""
 careerEndGoalPosition = ""
 currentSkillSet = []
 careerPref = ""
+courseSkillRecommend = list()
+jobSkillRecommend = list()
 
 # Create your views here.
 def index(request):
@@ -113,25 +115,9 @@ def chatbot(request):
 # DialogFlow block : START
 # ************************
 
-# ************************
-#Global Variable
-persona = "NA"
-currentPosition = ""
-yearsOfWokringExperience = 0
-companyName = ""
-courseSkillRecommend = list()
-jobSkillRecommend = list()
-# ************************
-
 # dialogflow webhook fulfillment
 @csrf_exempt
 def webhook(request):
-    global persona
-    global currentPosition
-    global yearsOfWokringExperience
-    global companyName
-    global courseSkillRecommend
-    global jobSkillRecommend
     # build a request object
     req = json.loads(request.body)
     # req = request.get_json(silent=True, force=True)
@@ -169,12 +155,14 @@ def webhook(request):
     global careerEndGoalPosition
     global currentSkillSet
     global careerPref
+    global courseSkillRecommend
+    global jobSkillRecommend
     resp_text = ""
-    
+
 # **********************
 # DialogFlow intents : START
 # **********************
-    
+
     # Persona Curious Explorer
     if intent_name == "A_GetCareerRoadMapInfo":
         persona = "Curious Explorer"
@@ -186,7 +174,7 @@ def webhook(request):
     elif intent_name == "A_GetHighestDemandJob":
         #jobtitle = getHighestDemandJob()
         resp_text =  f"Currently the highest demand job is {jobtitle}"
-    
+
     # Persona Go Getter
     elif intent_name == "A_GetJobCompetency":
         persona = "Go Getter"
@@ -255,7 +243,7 @@ def webhook(request):
         resp_text = "Great! First, I need to know what is your current position and how long you have been in it?"
     elif intent_name == "A_GetJobYears - no":
         resp_text = "Okay what else can I do for you?"
-    
+
     # Persona Curious Explorer
     elif intent_name == "A_GetServicesInfo":
         persona = "Curious Explorer"
@@ -267,12 +255,12 @@ def webhook(request):
     elif intent_name == "A_LookforCareerPath":
         persona = "Curious Explorer"
         resp_text = "I can help you develop a personalised career road map. First, I need to know what is your current position and how long you have been in it?"
-    
+
     # Persona Unemployed Job Seeker
     elif intent_name == "A_LookforJob":
         persona = "Unemployed Job Seeker"
         resp_text = "I know, its tough finding a job these days. Let me help you find a suitable job! First, I need to know what was your last position and how long you had been in it?"
-    
+
     # Persona Jaded Employee
     elif intent_name == "A_LookforJobChange":
         persona = "Jaded Employee"
@@ -288,7 +276,7 @@ def webhook(request):
     #         resp_text = "This is the list of Course Recommendations"
     #     elif persona == "Eager Learner":
     #         resp_text = "This is the list of Job Recommendations"
-    
+
     # elif intent_name =="GivePositionDetails":
     #     currentPosition = req["queryResult"]["parameters"]["currentPosition"]
     #     yearsOfWorkingExperience = req["queryResult"]["parameters"]["yearsOfWorkingExperience"]
@@ -296,7 +284,7 @@ def webhook(request):
     #         resp_text = "I have a found a few potential jobs for you. To narrow the search, I would need you to select the competencies that you have."
     #     elif persona == "Jaded Employee":
     #         resp_text = "Do you have any pinnacle position in mind?"
-    
+
     elif intent_name =="GiveEmailAddress":
         emailAddress = req["queryResult"]["parameters"]["emailAddress"]
 
@@ -311,8 +299,8 @@ def webhook(request):
         elif persona == "Unemployed Job Seeker" or persona == "Eager Learner":
             #Lead to Competencies Intent
             resp_text = "D_ElicitEmployDetails:UJS - I have noted your employment details. Next, would you share with me more about your competency?"
-        
-    
+
+
     # Elicit Career Preferences Intent Combined
     elif intent_name == "D_ElicitEmployDetails - no":
         resp_text = "D_ElicitEmployDetails - no - That's alright. Perhaps you can share with me if you enjoy management, technical or people roles and I can advise you a direction."
@@ -344,7 +332,7 @@ def webhook(request):
         resp_text = "D_GetAspiration - yes - Great to hear that. Based on the following list, please key in your relevant competencies."
     elif intent_name == "D_GetAspiration - no":
         resp_text = "D_GetAspiration - no - That's alright. Perhaps you can share with me if you enjoy management, technical or people roles and I can advise you a direction."
-    
+
     # Elicit Competencies Intent
     elif intent_name == "Wang_elicit_comp":
         currentSkillSet = req["queryResult"]["parameters"]['skills']
@@ -403,9 +391,12 @@ def webhook(request):
     # **********************
 
     # trigger elicit competence
-    # elif intent_name == "Wang_elicit_competence":
-    #     skillset = req["queryResult"]["parameters"]
-    #     if persona == "Jaded Employee":
+    elif intent_name == "Wang_elicit_competence":
+        skillset = req["queryResult"]["parameters"]
+        skills = processIncomingSkillset(skillset)
+        if persona == "Jaded Employee" and persona == "Go Getter":
+            redirect(request, 'Level_Up_App:courserecommendresult')
+
 
 
     # catch all response
@@ -453,6 +444,13 @@ def getJobSkillRequired(jobtitle):
     for skill in filterCareerPos.skillRequired.all():
         skillreq.append(str(skill))
     return skillreq
+
+def processIncomingSkillset(skillset):
+    userSkill=list()
+    for skill in skillset:
+        userSkill.append(skill.upper())
+    return userSkill
+
 # **********************
 # UTIL FUNCTIONS : END
 # **********************
