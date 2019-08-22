@@ -123,22 +123,11 @@ def webhook(request):
     req = json.loads(request.body)
     # req = request.get_json(silent=True, force=True)
     # get action from json
-    # action = req.get('queryResult').get('action')
+    
     intent_name = req["queryResult"]["intent"]["displayName"]
-    # return a fulfillment message
-    # if action == 'get_suggestion_chips':
-    #     # set fulfillment text
-    #     fulfillmentText = 'Suggestion chips Response from webhook'
-    #     aog = actions_on_google_response()
-    #     aog_sr = aog.simple_response([
-    #         [fulfillmentText, fulfillmentText, False]
-    #     ])
-    #     #create suggestion chips
-    #     aog_sc = aog.suggestion_chips(["suggestion1", "suggestion2"])
-    #     ff_response = fulfillment_response()
-    #     ff_text = ff_response.fulfillment_text(fulfillmentText)
-    #     ff_messages = ff_response.fulfillment_messages([aog_sr, aog_sc])
-    #     reply = ff_response.main_response(ff_text, ff_messages)
+
+    
+
     # else:
     #     reply = {'fulfillmentText': 'This is Django test response from webhook. Action or Intent not found'}
     # # return generated response
@@ -159,13 +148,24 @@ def webhook(request):
     global courseSkillRecommend
     global jobSkillRecommend
     resp_text = ""
-
+    action = ""
 # **********************
 # DialogFlow intents : START
 # **********************
-
+    # testing of actions...
+    action = req.get('queryResult').get('action')
+    if action == 'get_list':
+        fulfillmentText = 'Basic card Response from webhook'
+        aog = actions_on_google_response()
+        aog_sr = aog.simple_response([[fulfillmentText, fulfillmentText, False]])
+        basic_card = aog.basic_card("Title", "Subtitle", "This is formatted text", image=["https://www.pragnakalp.com/wp-content/uploads/2018/12/logo-1024.png", "this is accessibility text"])
+        ff_response = fulfillment_response()
+        ff_text = ff_response.fulfillment_text(fulfillmentText)
+        ff_messages = ff_response.fulfillment_messages([aog_sr, basic_card])
+        resp = ff_response.main_response(ff_text, ff_messages)
     # Persona Curious Explorer
-    if intent_name == "A_GetCareerRoadMapInfo":
+    # temporary elif
+    elif intent_name == "A_GetCareerRoadMapInfo":
         persona = "Curious Explorer"
         resp_text = "The Career Road Map shows you a career path to achieve your career aspiration in the shortest time. It is generated based on anonymised data of real career advancement. Would you be interested to discover your career road map?"
     elif intent_name == "A_GetCareerRoadMapInfo - yes":
@@ -294,6 +294,7 @@ def webhook(request):
             #Lead to Career Aspiration Intent
             resp_text = "D_ElicitEmployDetails:JECEGG - I have noted on your employment details. If given an opportunity, who do you aspire to be?"
         elif persona == "Unemployed Job Seeker" or persona == "Eager Learner":
+            # get competencies question function
             #Lead to Competencies Intent
             resp_text = "D_ElicitEmployDetails:UJS - I have noted your employment details. Next, would you share with me more about your competency?"
 
@@ -326,7 +327,9 @@ def webhook(request):
         # print CareerRoadMap as Card
         if persona == "Jaded Employee" or persona == "Curious Explorer" or persona == "Go Getter":
             # to elicit competency currentSkillSet = get_jadedemployee_elict_competence_qns(currentPosition, careerEndGoalPosition)
-            resp_text = resp_text + "I think I can value add more in terms of career advice. Can I check with you if you have this list of competencies: " #+ currentSkillSet
+            resp_text = resp_text + "I think I can value add more in terms of career advice. Can I check with you if you have this list of competencies: " 
+            #if action == 'get_list':
+            #+ currentSkillSet
         else:
             # call elicit_competence_qns_without roadmap
             # don't call....
@@ -418,7 +421,7 @@ def webhook(request):
     else:
         resp_text = "Unable to find a matching intent. Try again."
 
-    resp = {"fulfillmentText": resp_text}
+    #resp = {"fulfillmentText": resp_text}
     return JsonResponse(resp, status=200, content_type="application/json", safe=False)
     # return Response(json.dumps(resp), status=200, content_type="application/json")
 
