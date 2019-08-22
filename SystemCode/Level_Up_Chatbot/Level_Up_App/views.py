@@ -124,15 +124,7 @@ def webhook(request):
     req = json.loads(request.body)
     # req = request.get_json(silent=True, force=True)
     # get action from json
-    
     intent_name = req["queryResult"]["intent"]["displayName"]
-
-    
-
-    # else:
-    #     reply = {'fulfillmentText': 'This is Django test response from webhook. Action or Intent not found'}
-    # # return generated response
-    # return JsonResponse(reply, safe=False)
 
 # **********************
 # DialogFlow Variables : DEFINE
@@ -149,24 +141,24 @@ def webhook(request):
     global courseSkillRecommend
     global jobSkillRecommend
     resp_text = ""
-    action = ""
+    # action = ""
 # **********************
 # DialogFlow intents : START
 # **********************
     # testing of actions...
-    action = req.get('queryResult').get('action')
-    if action == 'get_list':
-        fulfillmentText = 'Basic card Response from webhook'
-        aog = actions_on_google_response()
-        aog_sr = aog.simple_response([[fulfillmentText, fulfillmentText, False]])
-        basic_card = aog.basic_card("Title", "Subtitle", "This is formatted text", image=["https://www.pragnakalp.com/wp-content/uploads/2018/12/logo-1024.png", "this is accessibility text"])
-        ff_response = fulfillment_response()
-        ff_text = ff_response.fulfillment_text(fulfillmentText)
-        ff_messages = ff_response.fulfillment_messages([aog_sr, basic_card])
-        resp = ff_response.main_response(ff_text, ff_messages)
+    # action = req.get('queryResult').get('action')
+    # if action == 'get_list':
+    #     fulfillmentText = 'Basic card Response from webhook'
+    #     aog = actions_on_google_response()
+    #     aog_sr = aog.simple_response([[fulfillmentText, fulfillmentText, False]])
+    #     basic_card = aog.basic_card("Title", "Subtitle", "This is formatted text", image=["https://www.pragnakalp.com/wp-content/uploads/2018/12/logo-1024.png", "this is accessibility text"])
+    #     ff_response = fulfillment_response()
+    #     ff_text = ff_response.fulfillment_text(fulfillmentText)
+    #     ff_messages = ff_response.fulfillment_messages([aog_sr, basic_card])
+    #     resp = ff_response.main_response(ff_text, ff_messages)
+    
     # Persona Curious Explorer
-    # temporary elif
-    elif intent_name == "A_GetCareerRoadMapInfo":
+    if intent_name == "A_GetCareerRoadMapInfo":
         persona = "Curious Explorer"
         resp_text = "The Career Road Map shows you a career path to achieve your career aspiration in the shortest time. It is generated based on anonymised data of real career advancement. Would you be interested to discover your career road map?"
     elif intent_name == "A_GetCareerRoadMapInfo - yes":
@@ -182,7 +174,8 @@ def webhook(request):
         persona = "Go Getter"
         jobInterestedIn = req["queryResult"]["parameters"]["job_roles"]
         competency = getJobCompetency(jobInterestedIn)
-        resp_text =  f"{jobInterestedIn} requires the following competencies: {competency}. Would you be interested to see a road map on how to get there?"
+        # to display skills in competency as strings in reply
+        resp_text =  f"{jobInterestedIn} requires the following competencies: {', '.join(str(x) for x in competency)}. Would you be interested to see a road map on how to get there?"
     elif intent_name == "A_GetJobCompetency - yes":
         resp_text = "Great! First, I need to know what is your current position and how long you have been in it?"
     elif intent_name == "A_GetJobCompetency - no":
@@ -308,15 +301,22 @@ def webhook(request):
         careerPref = req["queryResult"]["parameters"]["career_type"]
         if careerPref == "management":
             resp_text = "I will suggest you gunning for the Managing Director. Sounds good?"
+            careerEndGoalPosition = "Managing Director"
         elif careerPref == "sales":
             resp_text = "I will recommend to aim for the Sales Director. Do you think that's great?"
+            careerEndGoalPosition = "Sales Director"
         elif careerPref == "technical":
             resp_text = "I will suggest you to become either a Technical Director or CTO. Yes?"
+            careerEndGoalPosition = "Chief Technical Officer"
     elif intent_name == "K_GetCareerPref - yes":
         # call function and return Careerpath getCareerPath(currentPosition, careerEndGoalPosition)
-        resp_text = "D_GetCareerPreferences - yes - Great to hear that. Based on the role, perhaps you can share some of your competencies with me we can check where we should be going next."
+        resp_career_roadmap = getCareerPath(currentPosition, careerEndGoalPosition)
+        # elicit competencies based on careerEndGoalPosition
+        competencies = elicit_competence_with_endgoal(currentPosition, careerEndGoalPosition)
+        resp_text = resp_career_roadmap + f"D_GetCareerPreferences - yes - Great to hear that. Based on the role, do you have the following competencies today? {', '.join(str(x) for x in competencies)}"
     elif intent_name == "K_GetCareerPref - no":
-        resp_text = "D_GetCareerPreferences - no - I'm sorry I cannot serve you better today we are still upgrading this function. Is there any help that I can render to you?"
+        resp_career_roadmap = elicit_competence_without_endgoal(currentPosition)
+        resp_text = "D_GetCareerPreferences - no - I'm sorry I cannot serve you better today we are still upgrading this function. Is there any other things that I can help you with?"
 
 
     # Get Aspiration Intent Combined
@@ -327,13 +327,15 @@ def webhook(request):
         # getCareerPath(currentPosition, careerEndGoalPosition)
         # print CareerRoadMap as Card
         if persona == "Jaded Employee" or persona == "Curious Explorer" or persona == "Go Getter":
-            # to elicit competency currentSkillSet = get_jadedemployee_elict_competence_qns(currentPosition, careerEndGoalPosition)
-            resp_text = resp_text + "I think I can value add more in terms of career advice. Can I check with you if you have this list of competencies: " 
+            # call elicit_competence_qns_with roadmap
+            competencies = elicit_competence_with_endgoal(currentPosition, careerEndGoalPosition)
+            resp_text = resp_text + f"I think I can value add more in terms of career advice. Can I check with you if you have this list of competencies: {', '.join(str(x) for x in competencies)}" 
             #if action == 'get_list':
             #+ currentSkillSet
         else:
             # call elicit_competence_qns_without roadmap
-            # don't call....
+            competencies = elicit_competence_without_endgoal(currentPosition)
+            resp_text = resp_text + f"I think I can value add more in terms of career advice. Can I check with you if you have this list of competencies: {', '.join(str(x) for x in competencies)}"
             pass
 
     ## currently not used
@@ -401,6 +403,9 @@ def webhook(request):
     elif intent_name == "k_career_pref_mgmt_tech_sales":
         resp_text = "Help me to answer a few questions and I can suggest a career goal for you! /n"
 
+    # debug intent
+    elif intent_name == "K_Debug":
+        resp_text = f"Persona is {persona}. "
 
     # **********************
     # DialogFlow block : Start Raymond and Zilong
@@ -422,13 +427,9 @@ def webhook(request):
     else:
         resp_text = "Unable to find a matching intent. Try again."
 
-    #resp = {"fulfillmentText": resp_text}
+    resp = {"fulfillmentText": resp_text}
     return JsonResponse(resp, status=200, content_type="application/json", safe=False)
     # return Response(json.dumps(resp), status=200, content_type="application/json")
-
-
-   # return JsonResponse(resp, status=200, content_type="application/json", safe=False)
-# return Response(json.dumps(resp), status=200, content_type="application/json")
 
 # **********************
 # DialogFlow intents : END
