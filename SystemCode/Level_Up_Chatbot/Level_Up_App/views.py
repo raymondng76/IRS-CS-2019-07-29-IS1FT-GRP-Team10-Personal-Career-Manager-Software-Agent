@@ -27,6 +27,17 @@ careerPref = ""
 courseSkillRecommend = list()
 jobSkillRecommend = list()
 
+# Testing of Facebook Responses Format
+def list_to_json():
+    resp = {"facebook": {"text": "Here is a quick reply!","quick_replies":[{"content_type":"text","title":"How to get more out of your team or clients","payload":"How to get more out of your team or clients","image_url":"http://example.com/img/red.png"},
+      {
+          "content_type":"location"
+      }
+    ]
+  }
+}
+    return resp
+
 # Create your views here.
 def index(request):
     form = NewUserForm()
@@ -328,7 +339,7 @@ def webhook(request):
         resp_text = "D_GetAspiration - This is your career road map."
         # getCareerPath(currentPosition, careerEndGoalPosition)
         resp_career_roadmap = getCareerPath(currentPosition, careerEndGoalPosition)
-        # print CareerRoadMap as Card
+        print(resp_career_roadmap)
         resp_text = resp_text + resp_career_roadmap
         if persona == "Jaded Employee" or persona == "Curious Explorer" or persona == "Go Getter":
             # call elicit_competence_qns_with roadmap
@@ -412,7 +423,7 @@ def webhook(request):
         resp_text = f"Persona is {persona}. "
         resp_text = resp_text + f"Current job is {currentPosition}. "
         resp_text = resp_text + f"Career End Goal Job is {careerEndGoalPosition}. "
-
+        #resp = list_to_json()
     # **********************
     # DialogFlow block : Start Raymond and Zilong
     # **********************
