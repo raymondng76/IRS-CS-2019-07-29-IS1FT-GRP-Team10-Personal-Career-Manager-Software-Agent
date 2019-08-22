@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from Level_Up_App.forms import NewUserForm, QuestionaireForm
 from Level_Up_App.models import User, Questionaire, Course, Job, Skill, JobAndNextHigherPair, CareerPathMap, CareerSkills
 from Level_Up_App.courserecommendationrules import SkillGapsFact, CourseRecommender, recommendedcourses
-from Level_Up_App.jobrecommendationrules import SkillSetFact, JobRecommender, recommendedjobs
+from Level_Up_App.jobrecommendationrules import getJobRecommendation
 from Level_Up_App.careerknowledgegraph import CareerPathKnowledgeGraph
 from Level_Up_App.CareerPathASTARSearch import searchCareerPath
 from Level_Up_App.library.df_response_lib import *
@@ -79,7 +79,9 @@ def result(request):
     careerendpoint = 'CIO' #TODO
 
     # Filter job recommendations
-    # jobs = filterjobs(currPos)
+    skillset = list()
+    skillset.append('C++')
+    jobs = getJobRecommendation(skillset)
 
     skills = list()
     skills.append('ARTIFICIAL INTELLIGENCE')
@@ -446,16 +448,6 @@ def filtercourse(skills):
     engine.run()
     return recommendedcourses
 
-def getJobSkillRequired(skills):
-    # Declare job recommendation rules and build facts
-    engine = JobRecommender()
-    engine.reset()
-    engine.declare(SkillSetFact(skills=skills))
-    engine.run()
-    return recommendedjobs
-
-
-
 def processIncomingSkillset(skillset): # Input is a
     userSkill=list()
     for skill in skillset:
@@ -467,8 +459,6 @@ def aStarsearchwrapper(currPos, endpt):
     careerkg = cpkg.getCareerKnowledgeMap()
     careerph = cpkg.getCareerPathHeuristic()
     return searchCareerPath(careerkg, careerph, currPos, endpt)
-
-
 # **********************
 # UTIL FUNCTIONS : END
 # **********************
