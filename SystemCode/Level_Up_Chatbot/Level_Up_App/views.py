@@ -327,7 +327,9 @@ def webhook(request):
         careerEndGoalPosition = req["queryResult"]["parameters"]["job_roles"]
         resp_text = "D_GetAspiration - This is your career road map."
         # getCareerPath(currentPosition, careerEndGoalPosition)
+        resp_career_roadmap = getCareerPath(currentPosition, careerEndGoalPosition)
         # print CareerRoadMap as Card
+        resp_text = resp_text + resp_career_roadmap
         if persona == "Jaded Employee" or persona == "Curious Explorer" or persona == "Go Getter":
             # call elicit_competence_qns_with roadmap
             competencies = elicit_competence_with_endgoal(currentPosition, careerEndGoalPosition)
@@ -408,6 +410,8 @@ def webhook(request):
     # debug intent
     elif intent_name == "K_Debug":
         resp_text = f"Persona is {persona}. "
+        resp_text = resp_text + f"Current job is {currentPosition}. "
+        resp_text = resp_text + f"Career End Goal Job is {careerEndGoalPosition}. "
 
     # **********************
     # DialogFlow block : Start Raymond and Zilong
