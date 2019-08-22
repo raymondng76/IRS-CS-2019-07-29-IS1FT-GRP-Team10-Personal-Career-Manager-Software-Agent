@@ -2,7 +2,6 @@ from django.db.models import Count
 from Level_Up_App.models import CareerSkills, CareerPosition, Skill, Job, GenericInfo, CareerPathMap
 from Level_Up_App.courserecommendationrules import CourseRecommender, SkillGapsFact, recommendedcourses
 from Level_Up_App.jobrecommendationrules import getJobRecommendation
-from Level_Up_App.genericjobinfo import *
 from Level_Up_App.careerknowledgegraph import *
 from Level_Up_App.CareerPathASTARSearch import *
 

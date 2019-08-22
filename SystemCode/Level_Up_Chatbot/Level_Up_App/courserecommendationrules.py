@@ -1,4 +1,4 @@
-from pyknow import *
+from experta import *
 from Level_Up_App.models import Course, Skill
 
 
