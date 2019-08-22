@@ -338,15 +338,16 @@ def webhook(request):
         careerEndGoalPosition = req["queryResult"]["parameters"]["job_roles"]
         resp_text = "D_GetAspiration - This is your career road map."
         # getCareerPath(currentPosition, careerEndGoalPosition)
-        resp_career_roadmap = getCareerPath(currentPosition, careerEndGoalPosition)
+        cost, resp_career_roadmap = getCareerPath(currentPosition, careerEndGoalPosition)
         print(resp_career_roadmap)
-        resp_text = resp_text + resp_career_roadmap
+        resp_text = resp_text + f"Your career roadmap is: {' to '.join(str(x) for x in resp_career_roadmap)} and it will take you {cost} months."
         if persona == "Jaded Employee" or persona == "Curious Explorer" or persona == "Go Getter":
             # call elicit_competence_qns_with roadmap
-            competencies = elicit_competence_with_endgoal(currentPosition, careerEndGoalPosition)
-            resp_text = resp_text + f"I think I can value add more in terms of career advice. Can I check with you if you have this list of competencies: {', '.join(str(x) for x in competencies)}" 
+            #competencies = elicit_competence_with_endgoal(currentPosition, careerEndGoalPosition)
+            #resp_text = resp_text + f"I think I can value add more in terms of career advice. Can I check with you if you have this list of competencies: {', '.join(str(x) for x in competencies)}" 
             #if action == 'get_list':
             #+ currentSkillSet
+            pass
         else:
             # call elicit_competence_qns_without roadmap
             competencies = elicit_competence_without_endgoal(currentPosition)
