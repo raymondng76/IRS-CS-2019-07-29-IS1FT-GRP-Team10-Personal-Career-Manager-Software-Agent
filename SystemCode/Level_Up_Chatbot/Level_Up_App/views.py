@@ -12,6 +12,7 @@ from Level_Up_App.careerknowledgegraph import CareerPathKnowledgeGraph
 from Level_Up_App.CareerPathASTARSearch import searchCareerPath
 from Level_Up_App.library.df_response_lib import *
 import json
+from enum import Enum
 from Level_Up_App.chatbot_util import *
 
 ### Global Variables
@@ -33,7 +34,7 @@ visit_ltj = False
 
 # # Testing of Facebook Responses Format
 def list_to_json():
-    global visit_ltj 
+    global visit_ltj
     visit_ltj = True
     resp_facebook = {"message":{
         "attachment":{
@@ -201,10 +202,11 @@ def webhook(request):
     #     ff_text = ff_response.fulfillment_text(fulfillmentText)
     #     ff_messages = ff_response.fulfillment_messages([aog_sr, basic_card])
     #     resp = ff_response.main_response(ff_text, ff_messages)
-    
+
     # Persona Curious Explorer
     if intent_name == "A_GetCareerRoadMapInfo":
-        persona = "Curious Explorer"
+        # persona = "Curious Explorer"
+        setPersona(PersonaType.CURIOUS_EXPLORER.name)
         resp_text = "The Career Road Map shows you a career path to achieve your career aspiration in the shortest time. It is generated based on anonymised data of real career advancement. Would you be interested to discover your career road map?"
     elif intent_name == "A_GetCareerRoadMapInfo - yes":
         resp_text = "Great! First, I need to know what is your current position and how long you have been in it?"
@@ -216,8 +218,10 @@ def webhook(request):
 
     # Persona Go Getter
     elif intent_name == "A_GetJobCompetency":
-        persona = "Go Getter"
+        # persona = "Go Getter"
+        setPersona(PersonaType.GO_GETTER.name)
         jobInterestedIn = req["queryResult"]["parameters"]["job_roles"]
+        setJobInterestedIn(jobInterestedIn)
         competency = getJobCompetency(jobInterestedIn)
         # to display skills in competency as strings in reply
         resp_text =  f"{jobInterestedIn} requires the following competencies: {', '.join(str(x) for x in competency)}. Would you be interested to see a road map on how to get there?"
@@ -226,7 +230,8 @@ def webhook(request):
     elif intent_name == "A_GetJobCompetency - no":
         resp_text = "Okay what else can I do for you?"
     elif intent_name == "A_GetJobDifference":
-        persona = "Go Getter"
+        # persona = "Go Getter"
+        setPersona(PersonaType.GO_GETTER.name)
         jobtitle1 = req["queryResult"]["parameters"]["job_roles1"]
         jobtitle2 = req["queryResult"]["parameters"]["job_roles2"]
         jd1 = getJobDescription(jobtitle1)
@@ -240,8 +245,10 @@ def webhook(request):
     elif intent_name == "A_GetJobDifference - custom - no":
         resp_text = "Okay what else can I do for you?"
     elif intent_name == "A_GetJobEducation":
-        persona = "Go Getter"
+        # persona = "Go Getter"
+        setPersona(PersonaType.GO_GETTER.name)
         jobInterestedIn = req["queryResult"]["parameters"]["job_roles"]
+        setJobInterestedIn(jobInterestedIn)
         education = getJobEducationLevel(jobInterestedIn)
         resp_text =  f"{jobInterestedIn} requires {education}. Would you be interested to see a road map on how to get there?"
     elif intent_name == "A_GetJobEducation - yes":
@@ -249,12 +256,16 @@ def webhook(request):
     elif intent_name == "A_GetJobEducation - no":
         resp_text = "Okay what else can I do for you?"
     elif intent_name == "A_GetJobPath":
-        persona = "Go Getter"
+        # persona = "Go Getter"
+        setPersona(PersonaType.GO_GETTER.name)
         jobInterestedIn = req["queryResult"]["parameters"]["job_roles"]
+        setJobInterestedIn(jobInterestedIn)
         resp_text = "I can help you with that! First, I need to know what is your current position and how long you have been in it?"
     elif intent_name == "A_GetJobSalary":
-        persona = "Go Getter"
+        # persona = "Go Getter"
+        setPersona(PersonaType.GO_GETTER.name)
         jobInterestedIn = req["queryResult"]["parameters"]["job_roles"]
+        setJobInterestedIn(jobInterestedIn)
         salary = getJobSalary(jobInterestedIn)
         resp_text = f"On average, {jobInterestedIn} earns {salary} a month. Would you be interested to see a road map on how to get there?"
     elif intent_name == "A_GetJobSalary - yes":
@@ -262,8 +273,10 @@ def webhook(request):
     elif intent_name == "A_GetJobSalary - no":
         resp_text = "Okay what else can I do for you?"
     elif intent_name == "A_GetJobScope":
-        persona = "Go Getter"
+        # persona = "Go Getter"
+        setPersona(PersonaType.GO_GETTER.name)
         jobInterestedIn = req["queryResult"]["parameters"]["job_roles"]
+        setJobInterestedIn(jobInterestedIn)
         jd = getJobDescription(jobInterestedIn)
         resp_text = f"Below is the job description of a {jobInterestedIn}: \n {jd}. \n Would you be interested to see a road map on how to get there?"
     elif intent_name == "A_GetJobScope - yes":
@@ -271,9 +284,12 @@ def webhook(request):
     elif intent_name == "A_GetJobScope - no":
         resp_text = "Okay what else can I do for you?"
     elif intent_name == "A_GetJobYears":
-        persona = "Go Getter"
+        # persona = "Go Getter"
+        setPersona(PersonaType.GO_GETTER.name)
         jobInterestedIn = req["queryResult"]["parameters"]["job_roles"]
+        setJobInterestedIn(jobInterestedIn)
         years = getJobMinYearsExperience(jobInterestedIn)
+        setYearsOfWorkingExperience(years)
         resp_text =  f"{jobInterestedIn} typically requires {years} years of experience. Would you be interested to see a road map on how to get there?"
     elif intent_name == "A_GetJobYears - yes":
         resp_text = "Great! First, I need to know what is your current position and how long you have been in it?"
@@ -282,27 +298,32 @@ def webhook(request):
 
     # Persona Curious Explorer
     elif intent_name == "A_GetServicesInfo":
-        persona = "Curious Explorer"
+        # persona = "Curious Explorer"
+        setPersona(PersonaType.CURIOUS_EXPLORER.name)
         resp_text = "I can help you develop a personalised career road map and help you look for suitable jobs and training courses. Would you like to give it a go?"
     elif intent_name == "A_GetServicesInfo - yes":
         resp_text = "Great! First, I need to know what is your current position and how long you have been in it?"
     elif intent_name == "A_GetServicesInfo - no":
         resp_text = "Okay what else can I do for you?"
     elif intent_name == "A_LookforCareerPath":
-        persona = "Curious Explorer"
+        # persona = "Curious Explorer"
+        setPersona(PersonaType.CURIOUS_EXPLORER.name)
         resp_text = "I can help you develop a personalised career road map. First, I need to know what is your current position and how long you have been in it?"
 
     # Persona Unemployed Job Seeker
     elif intent_name == "A_LookforJob":
-        persona = "Unemployed Job Seeker"
+        # persona = "Unemployed Job Seeker"
+        setPersona(PersonaType.UNEMPLOYED_JOB_SEEKER.name)
         resp_text = "I know, its tough finding a job these days. Let me help you find a suitable job! First, I need to know what was your last position and how long you had been in it?"
 
     # Persona Jaded Employee
     elif intent_name == "A_LookforJobChange":
-        persona = "Jaded Employee"
+        # persona = "Jaded Employee"
+        setPersona(PersonaType.JADED_EMPLOYEE.name)
         resp_text = "I am sorry to hear that. I think I can help you. First, I need to know what is your current position and how long you have been in it?"
     elif intent_name == "A_LookforSelfImprovement":
-        persona = "Eager Learner"
+        # persona = "Eager Learner"
+        setPersona(PersonaType.EAGER_LEARNER.name)
         resp_text = "I am glad you are actively seeking to improve yourself. I can help you with that. First, I need to know what is your current position and how long you have been in it?"
 
     # elif intent_name == "ShowCareerRoadMap":
@@ -327,12 +348,16 @@ def webhook(request):
     # Elicit Employment Details Intent
     elif intent_name == "D_ElicitEmployDetails":
         currentPosition = req["queryResult"]["parameters"]["job_roles"]
+        setCurrentPosition(currentPosition)
         yearsOfWorkingExperience = req["queryResult"]["parameters"]["duration"]
+        setYearsOfWorkingExperience(yearsOfWorkingExperience)
 
-        if persona == "Jaded Employee" or persona == "Curious Explorer" or persona == "Go Getter":
+        # if persona == "Jaded Employee" or persona == "Curious Explorer" or persona == "Go Getter":
+        if getPersona() == PersonaType.JADED_EMPLOYEE.name or getPersona() == PersonaType.CURIOUS_EXPLORER.name or getPersona() == PersonaType.GO_GETTER.name:
             #Lead to Career Aspiration Intent
             resp_text = "D_ElicitEmployDetails:JECEGG - I have noted on your employment details. If given an opportunity, who do you aspire to be?"
-        elif persona == "Unemployed Job Seeker" or persona == "Eager Learner":
+        # elif persona == "Unemployed Job Seeker" or persona == "Eager Learner":
+        elif getPersona() == PersonaType.UNEMPLOYED_JOB_SEEKER.name or getPersona() == PersonaType.EAGER_LEARNER.name
             # get competencies question function
             #Lead to Competencies Intent
             resp_text = "D_ElicitEmployDetails:UJS - I have noted your employment details. Next, would you share with me more about your competency?"
@@ -344,15 +369,22 @@ def webhook(request):
     elif intent_name == "K_GetCareerPref":
         #Get Career Preference
         careerPref = req["queryResult"]["parameters"]["career_type"]
-        if careerPref == "management":
+        setCareerPref(careerPref)
+        # if careerPref == "management":
+        if getCareerPref() == CareerType.MANAGEMENT.name
             resp_text = "I will suggest you gunning for the Managing Director. Sounds good?"
             careerEndGoalPosition = "Managing Director"
-        elif careerPref == "sales":
+            setCareerEndGoalPosition(careerEndGoalPosition)
+        # elif careerPref == "sales":
+        elif getCareerPref() == CareerType.SALES.name
             resp_text = "I will recommend to aim for the Sales Director. Do you think that's great?"
             careerEndGoalPosition = "Sales Director"
-        elif careerPref == "technical":
+            setCareerEndGoalPosition(careerEndGoalPosition)
+        # elif careerPref == "technical":
+        elif getCareerPref() == CareerType.TECHNICAL.name
             resp_text = "I will suggest you to become either a Technical Director or CTO. Yes?"
             careerEndGoalPosition = "Chief Technical Officer"
+            setCareerEndGoalPosition(careerEndGoalPosition)
     elif intent_name == "K_GetCareerPref - yes":
         # call function and return Careerpath getCareerPath(currentPosition, careerEndGoalPosition)
         resp_career_roadmap = getCareerPath(currentPosition, careerEndGoalPosition)
@@ -368,15 +400,17 @@ def webhook(request):
     elif intent_name == "D_GetAspiration":
         #Lead to D_GetAspiration - yes Intent
         careerEndGoalPosition = req["queryResult"]["parameters"]["job_roles"]
+        setCareerEndGoalPosition(careerEndGoalPosition)
         resp_text = "D_GetAspiration - This is your career road map."
         # getCareerPath(currentPosition, careerEndGoalPosition)
         cost, resp_career_roadmap = getCareerPath(currentPosition, careerEndGoalPosition)
         print(resp_career_roadmap)
         resp_text = resp_text + f"Your career roadmap is: {' to '.join(str(x) for x in resp_career_roadmap)} and it will take you {cost} months."
-        if persona == "Jaded Employee" or persona == "Curious Explorer" or persona == "Go Getter":
+        # if persona == "Jaded Employee" or persona == "Curious Explorer" or persona == "Go Getter":
+        if getPersona() == PersonaType.JADED_EMPLOYEE.name or getPersona() == PersonaType.CURIOUS_EXPLORER.name or getPersona() == PersonaType.GO_GETTER.name:
             # call elicit_competence_qns_with roadmap
             #competencies = elicit_competence_with_endgoal(currentPosition, careerEndGoalPosition)
-            #resp_text = resp_text + f"I think I can value add more in terms of career advice. Can I check with you if you have this list of competencies: {', '.join(str(x) for x in competencies)}" 
+            #resp_text = resp_text + f"I think I can value add more in terms of career advice. Can I check with you if you have this list of competencies: {', '.join(str(x) for x in competencies)}"
             #if action == 'get_list':
             #+ currentSkillSet
             pass
@@ -396,10 +430,12 @@ def webhook(request):
     # Elicit Competencies Intent
     elif intent_name == "Wang_elicit_comp":
         currentSkillSet = req["queryResult"]["parameters"]['skills']
+        setCurrentSkillset(currentSkillSet)
         # jobSkillRecommend = get_jadedemployee_jobsrecommendation(currentPosition, currentSkillSet) and return jobs matching current skills
         # if jobSkillRecommend == []:
         #   resp_text = "You are doing great with your skills. We currently have nothing for you. Is there something else I can help with?"
-        if persona == "Curious Explorer" or persona == "Eager Learner":
+        # if persona == "Curious Explorer" or persona == "Eager Learner":
+        if getPersona() == PersonaType.CURIOUS_EXPLORER.name or getPersona() == PersonaType.EAGER_LEARNER.name:
             resp_text = "That's some awesome skills you have, here are some courses that might be interesting for you."
             resp_text = resp_text + "I think there are some jobs waiting for talented people like you. Would you be interested to find out more?"
         else:
@@ -416,30 +452,35 @@ def webhook(request):
     ## cust_type intents - personas
     # jaded employee
     elif intent_name == "k_career_coach_cust_type_jaded":
-        persona = "Jaded Employee"
+        # persona = "Jaded Employee"
+        setPersona(PersonaType.JADED_EMPLOYEE.name)
         resp_text = "I am sorry to hear that. I think I can help you. First, tell me more about your current position and work experience."
     # guide to cust_employment_details intent
 
     # curious explorer
     elif intent_name == "k_career_coach_cust_type_explorer":
-        persona = "Curious Explorer"
+        # persona = "Curious Explorer"
+        setPersona(PersonaType.CURIOUS_EXPLORER.name)
         resp_text = "The Career Road Map shows you a career path to achieve your career aspiration in the shortest time. It is generated based on anonymised data of real career advancement. Can I know more about your current employment?"
     # guide to cust_employment_details intent
 
     # Go Getter
     elif intent_name == "k_career_coach_cust_type_gogetter":
-        persona = "Go Getter"
+        # persona = "Go Getter"
+        setPersona(PersonaType.GO_GETTER.name)
         resp_text = "The Career Road Map shows you a career path to achieve your career aspiration in the shortest time. It is generated based on anonymised data of real career advancement. Do you have any career aspiration?"
     # guide to cust_aspiration intent
 
     # The Unemployed Job Seeker
     elif intent_name == "k_career_coach_cust_type_unemployed":
-        persona = "The Unemployed Job Seeker"
+        # persona = "The Unemployed Job Seeker"
+        setPersona(PersonaType.UNEMPLOYED_JOB_SEEKER.name)
         resp_text = "Do not worry, we are here to help. /n Please help us to know more about your previous employment."
 
     # The Eager Learner
     elif intent_name == "k_career_coach_cust_type_eagerlearner_job":
-        persona = "The Eager Learner"
+        # persona = "The Eager Learner"
+        setPersona(PersonaType.EAGER_LEARNER.name)
         resp_text = "Let's work together to improve ourselves. /n Please help us to know more about your previous employment."
 
     # from cust_employment details intent
@@ -511,6 +552,18 @@ def aStarsearchwrapper(currPos, endpt):
     careerkg = cpkg.getCareerKnowledgeMap()
     careerph = cpkg.getCareerPathHeuristic()
     return searchCareerPath(careerkg, careerph, currPos, endpt)
+
+class PersonaType(Enum):
+    CURIOUS_EXPLORER = 1
+    GO_GETTER = 2
+    JADED_EMPLOYEE = 3
+    UNEMPLOYED_JOB_SEEKER = 4
+    EAGER_LEARNER = 5
+
+class CareerType(Enum):
+    MANAGEMENT = 1
+    SALES = 2
+    TECHNICAL = 3
 # **********************
 # UTIL FUNCTIONS : END
 # **********************
