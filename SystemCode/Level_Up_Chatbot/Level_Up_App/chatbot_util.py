@@ -1,5 +1,5 @@
 from django.db.models import Count
-from Level_Up_App.models import CareerSkills, CareerPosition, Skill, Job, GenericInfo, CareerPathMap
+from Level_Up_App.models import CareerSkills, CareerPosition, Skill, Job, GenericInfo, CareerPathMap, ChatbotVar
 from Level_Up_App.courserecommendationrules import CourseRecommender, SkillGapsFact, recommendedcourses
 from Level_Up_App.jobrecommendationrules import getJobRecommendation
 from Level_Up_App.careerknowledgegraph import *
@@ -150,3 +150,99 @@ def getCareerPathMap(currPos): # Input is string
     # Get career path map object filter by career pos object
     careerPath = CareerPathMap.objects.filter(initialpos=currCareerPos)
     return careerPath # This is a queryset of careerpath
+#*****************************************
+# Methods for chat bot variable : START
+#*****************************************
+def getPersona():
+    cbv = getChatbotVar()
+    return cbv.get_persona()
+def setPersona(persona):
+    cbv = getChatbotVar()
+    cbv.set_persona(persona)
+    cbv.save()
+
+def getCurrentPosition():
+    cbv = getChatbotVar()
+    return cbv.get_currentPosition()
+def setCurrentPosition(currentPosition):
+    cbv = getChatbotVar()
+    cbv.set_currentPosition(currentPosition)
+    cbv.save()
+
+def getYearsOfWorkingExperience():
+    cbv = getChatbotVar()
+    return cbv.get_yearsOfWorkingExperience()
+def setYearsOfWorkingExperience(yearsOfWorkingExperience):
+    cbv = getChatbotVar()
+    cbv.set_yearsOfWorkingExperience(yearsOfWorkingExperience)
+    cbv.save()
+
+def getCompanyName():
+    cbv = getChatbotVar()
+    return cbv.get_companyName()
+def setCompanyName(companyName):
+    cbv = getChatbotVar()
+    cbv.set_companyName(companyName)
+    cbv.save()
+
+def getEmailAddress():
+    cbv = getChatbotVar()
+    return cbv.get_emailAddress()
+def setEmailAddress(emailAddress):
+    cbv = getChatbotVar()
+    cbv.set_emailAddress(emailAddress)
+    cbv.save()
+
+def getJobInterestedIn():
+    cbv = getChatbotVar()
+    return cbv.get_jobInterestedIn()
+def setJobInterestedIn(jobInterestedIn):
+    cbv = getChatbotVar()
+    cbv.set_jobInterestedIn(jobInterestedIn)
+    cbv.save()
+
+def getCareerEndGoalPosition():
+    cbv = getChatbotVar()
+    return cbv.get_careerEndGoalPosition()
+def setCareerEndGoalPosition(careerEndGoalPosition):
+    cbv = getChatbotVar()
+    cbv.set_careerEndGoalPosition(careerEndGoalPosition)
+    cbv.save()
+
+def getCurrentSkillset():
+    cbv = getChatbotVar()
+    return cbv.get_currentSkillset()
+def setCurrentSkillset(currentSkillset):
+    cbv = getChatbotVar()
+    cbv.set_currentSkillset(currentSkillset)
+    cbv.save()
+
+def getCareerPref():
+    cbv = getChatbotVar()
+    return cbv.get_careerPref()
+def setCareerPref(careerPref):
+    cbv = getChatbotVar()
+    cbv.set_careerPref(careerPref)
+    cbv.save()
+
+def getCourseSkillRecommendation():
+    cbv = getChatbotVar()
+    return cbv.get_courseSkillRecommend()
+def setCourseSkillRecommendation(courseSkillRecommend):
+    cbv = getChatbotVar()
+    cbv.set_courseSkillRecommend(courseSkillRecommend)
+    cbv.save()
+
+def getJobSkillRecommendation():
+    cbv = getChatbotVar()
+    return cbv.get_jobSkillRecommend()
+def setJobSklllRecommendation(jobSkillRecommend):
+    cbv = getChatbotVar()
+    cbv.set_jobSkillRecommend(jobSkillRecommend)
+    cbv.save()
+
+def getChatbotVar():
+    return ChatbotVar.objects.get(pk=1)
+#*****************************************
+# Methods for chat bot variable : END
+#*****************************************
