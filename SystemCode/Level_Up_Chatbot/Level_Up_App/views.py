@@ -397,9 +397,9 @@ def webhook(request):
             resp_text = "D_ElicitEmployDetails:JECEGG - I have noted on your employment details. If given an opportunity, who do you aspire to be?"
         # elif persona == "Unemployed Job Seeker" or persona == "Eager Learner":
         elif getPersona() == PersonaType.UNEMPLOYED_JOB_SEEKER.name or getPersona() == PersonaType.EAGER_LEARNER.name:
-            # get competencies question function
-            #Lead to Competencies Intent
-            resp_text = "D_ElicitEmployDetails:UJS - I have noted your employment details. Next, would you share with me more about your competency?"
+            # competencies = elicit_competence_without_endgoal(currentPosition)
+            # Lead to Competencies Intent
+            resp_text = f"D_ElicitEmployDetails:UJS - I have noted your employment details. Do you have the following competencies?" #{', '.join(str(x) for x in competencies)}"
 
 
     # Elicit Career Preferences Intent Combined
@@ -470,7 +470,7 @@ def webhook(request):
     elif intent_name == "Wang_elicit_comp":
         currentSkillSet = req["queryResult"]["parameters"]['skills']
         setCurrentSkillset(currentSkillSet)
-        # jobSkillRecommend = get_jadedemployee_jobsrecommendation(currentPosition, currentSkillSet) and return jobs matching current skills
+        jobSkillRecommend = jobsrecommendation_without_endgoal(currentPosition, getCurrentSkillset())
         # if jobSkillRecommend == []:
         #   resp_text = "You are doing great with your skills. We currently have nothing for you. Is there something else I can help with?"
         # if persona == "Curious Explorer" or persona == "Eager Learner":
@@ -478,7 +478,7 @@ def webhook(request):
             resp_text = "That's some awesome skills you have, here are some courses that might be interesting for you."
             resp_text = resp_text + "I think there are some jobs waiting for talented people like you. Would you be interested to find out more?"
         else:
-            resp_text = "That's a great set of skills, here are some jobs you might find interesting."
+            resp_text = "That's a great set of skills, here are some jobs you might find interesting." + jobSkillRecommend
             resp_text = resp_text + "I think I can show you some courses that might help improve you skillsets too. Would you be interested to find out more?"
     # Follow up to Jobs Recommendation
     elif intent_name == "Wang_elicit_comp - yes":
@@ -562,12 +562,7 @@ def webhook(request):
     #     resp = resp_facebook
     # else:
     
-    # resp = {
-    #     "fulfillmentText": resp_text,
-    #     "fulfillmentMessages": [
-    #     {resp_facebook}
-    #     ]}
-    
+    resp = {"fulfillmentText": resp_text}
     return JsonResponse(resp, status=200, content_type="application/json", safe=False)
     # return Response(json.dumps(resp), status=200, content_type="application/json")
 
