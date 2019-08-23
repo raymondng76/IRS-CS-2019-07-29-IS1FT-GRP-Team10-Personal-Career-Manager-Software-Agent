@@ -3,3 +3,5 @@ SystemCode/Level_Up_Chatbot/.vscode/settings.json
 SystemCode/Level_Up_Chatbot/databasecreate.py
 SystemCode/Level_Up_Chatbot/ngrok.exe
 SystemCode/Level_Up_Chatbot/Level_Up_App/recommendtest.py
+SystemCode/test_networkx.py
+SystemCode/test

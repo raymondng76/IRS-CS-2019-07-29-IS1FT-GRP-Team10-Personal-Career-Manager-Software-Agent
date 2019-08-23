@@ -27,6 +27,7 @@ careerPref = ""
 courseSkillRecommend = list()
 jobSkillRecommend = list()
 visit_ltj = False
+resp_facebook = ""
 
 # json formatter
 # resp_facebook = ""
@@ -35,39 +36,109 @@ visit_ltj = False
 def list_to_json():
     global visit_ltj 
     visit_ltj = True
-    resp_facebook = {"message":{
-        "attachment":{
-            "type":"template",
-                "payload": {
-                    "template_type":"generic",
-                    "elements":[
-                        {
-                            "title":"testing card title",
-                            "image_url":"https://www.iss.nus.edu.sg/Sitefinity/WebsiteTemplates/ISS/App_Themes/ISS/Images/branding-iss.png",
-                            "subtitle":"subtitle text",
-                            "default_action": {
-                                "type":"web_url",
-                                "url": "https://www.iss.nus.edu.sg/",
-                                "messenger_extensions": True,
-                                "webview_height_ration": "FULL",
-                            },
-                            "buttons":[
-                                {
-                                    "type":"web_url",
-                                    "url":"https://www.iss.nus.edu.sg/",
-                                    "title":"View Website"
-                                },{
-                                    "type":"postback",
-                                    "title":"Start Chatting",
-                                    "payload":"DEVELOPER_DEFINED_PAYLOAD"
-                                }
-                            ]
-                        }
-                    ]
-                }
-            }
+    resp_facebook = {
+      "fulfillmentText": "This is a text response",
+      "fulfillmentMessages": [
+          {
+          "card": {
+            "title": "Job Title",
+            "subtitle": "Course Code",
+            "imageUri": "https://assistant.google.com/static/images/molecule/Molecule-Formation-stop.png",
+            "buttons": [
+              {
+                "text": "Job URL",
+                "postback": "https://assistant.google.com/"
+              }
+            ]
+          }
+        },{
+          "card": {
+            "title": "Job Title",
+            "subtitle": "Course Code",
+            "imageUri": "https://assistant.google.com/static/images/molecule/Molecule-Formation-stop.png",
+            "buttons": [
+              {
+                "text": "Job URL",
+                "postback": "https://assistant.google.com/"
+              }
+            ]
+          }
         }
+      ]
     }
+    
+    
+    
+    ## COURSE
+    
+    # {
+    #   "fulfillmentText": "This is a text response",
+    #   "fulfillmentMessages": [
+    #       {
+    #       "card": {
+    #         "title": "Course Title",
+    #         "subtitle": "Course Code",
+    #         "imageUri": "https://assistant.google.com/static/images/molecule/Molecule-Formation-stop.png",
+    #         "buttons": [
+    #           {
+    #             "text": "Course URL",
+    #             "postback": "https://assistant.google.com/"
+    #           }
+    #         ]
+    #       }
+    #     }
+    #   ]
+    # }
+
+    # data Types
+    ## COURSE
+    ## Course_Code
+    ## Course Title
+    ## Course URL
+
+    ## JOB
+    ## Job Title
+    ## Job Min. Education Level
+    ## Job Min Salary
+    ## Job Max Salary
+    ## Job Company
+    ## Job URL
+
+    ## SIGNUP
+    ## Signup URL
+        # "facebook":{
+        #     "attachment":{
+        #         "type":"template",
+        #             "payload": {
+        #                 "template_type":"generic",
+        #                 "elements":[
+        #                     {
+        #                         "title":"testing card title",
+        #                         "image_url":"https://www.iss.nus.edu.sg/Sitefinity/WebsiteTemplates/ISS/App_Themes/ISS/Images/branding-iss.png",
+        #                         "subtitle":"subtitle text",
+        #                         "default_action": {
+        #                             "type":"web_url",
+        #                             "url": "https://www.iss.nus.edu.sg/",
+        #                             "messenger_extensions": True,
+        #                             "webview_height_ration": "FULL",
+        #                         },
+        #                         "buttons":[
+        #                             {
+        #                                 "type":"web_url",
+        #                                 "url":"https://www.iss.nus.edu.sg/",
+        #                                 "title":"View Website"
+        #                             },{
+        #                                 "type":"postback",
+        #                                 "title":"Start Chatting",
+        #                                 "payload":"DEVELOPER_DEFINED_PAYLOAD"
+        #                             }
+        #                         ]
+        #                     }
+        #                 ]
+        #             }
+        #         }
+        #     }
+        # }
     return resp_facebook
 
 # Create your views here.
@@ -481,7 +552,13 @@ def webhook(request):
     # if visit_ltj == True:
     #     resp = resp_facebook
     # else:
-    resp = {"fulfillmentText": resp_text}
+    
+    # resp = {
+    #     "fulfillmentText": resp_text,
+    #     "fulfillmentMessages": [
+    #     {resp_facebook}
+    #     ]}
+    
     return JsonResponse(resp, status=200, content_type="application/json", safe=False)
     # return Response(json.dumps(resp), status=200, content_type="application/json")
 
