@@ -12,6 +12,7 @@ def getJobCompetency(jobtitle):
     filterCareerPos = CareerSkills.objects.get(careerpos=careerpos)
     for skill in filterCareerPos.skillRequired.all():
         jobcompetency.append(str(skill))
+    print(jobcompetency)
     return jobcompetency
 
 def getHighestDemandJob():
@@ -246,3 +247,18 @@ def getChatbotVar():
 #*****************************************
 # Methods for chat bot variable : END
 #*****************************************
+
+#*********************************************
+# Methods for Facebook button warpper : START
+#*********************************************
+# def warpCourseRecommendation(courseList):
+#     resp = {}
+#     resp['fulfillmentText'] = "Error showing course recommendation!"
+#     resp['fulfillmentMessages'] = {}
+#     for course in courseList:
+#         resp['fulfillmentMessages']['card'] = {
+#             "title":
+#         }
+#*********************************************
+# Methods for Facebook button warpper : END
+#*********************************************
