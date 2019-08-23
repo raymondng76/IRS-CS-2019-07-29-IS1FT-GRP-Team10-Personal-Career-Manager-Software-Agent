@@ -26,17 +26,49 @@ currentSkillSet = []
 careerPref = ""
 courseSkillRecommend = list()
 jobSkillRecommend = list()
+visit_ltj = False
 
-# Testing of Facebook Responses Format
+# json formatter
+# resp_facebook = ""
+
+# # Testing of Facebook Responses Format
 def list_to_json():
-    resp = {"facebook": {"text": "Here is a quick reply!","quick_replies":[{"content_type":"text","title":"How to get more out of your team or clients","payload":"How to get more out of your team or clients","image_url":"http://example.com/img/red.png"},
-      {
-          "content_type":"location"
-      }
-    ]
-  }
-}
-    return resp
+    global visit_ltj 
+    visit_ltj = True
+    resp_facebook = {"message":{
+        "attachment":{
+            "type":"template",
+                "payload": {
+                    "template_type":"generic",
+                    "elements":[
+                        {
+                            "title":"testing card title",
+                            "image_url":"https://www.iss.nus.edu.sg/Sitefinity/WebsiteTemplates/ISS/App_Themes/ISS/Images/branding-iss.png",
+                            "subtitle":"subtitle text",
+                            "default_action": {
+                                "type":"web_url",
+                                "url": "https://www.iss.nus.edu.sg/",
+                                "messenger_extensions": True,
+                                "webview_height_ration": "FULL",
+                            },
+                            "buttons":[
+                                {
+                                    "type":"web_url",
+                                    "url":"https://www.iss.nus.edu.sg/",
+                                    "title":"View Website"
+                                },{
+                                    "type":"postback",
+                                    "title":"Start Chatting",
+                                    "payload":"DEVELOPER_DEFINED_PAYLOAD"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    }
+    return resp_facebook
 
 # Create your views here.
 def index(request):
@@ -421,10 +453,10 @@ def webhook(request):
 
     # debug intent
     elif intent_name == "K_Debug":
-        resp_text = f"Persona is {persona}. "
-        resp_text = resp_text + f"Current job is {currentPosition}. "
-        resp_text = resp_text + f"Career End Goal Job is {careerEndGoalPosition}. "
-        #resp = list_to_json()
+        #resp_text = f"Persona is {persona}. "
+        #resp_text = resp_text + f"Current job is {currentPosition}. "
+        #resp_text = resp_text + f"Career End Goal Job is {careerEndGoalPosition}. "
+        resp = list_to_json()
     # **********************
     # DialogFlow block : Start Raymond and Zilong
     # **********************
@@ -445,6 +477,10 @@ def webhook(request):
     else:
         resp_text = "Unable to find a matching intent. Try again."
 
+
+    # if visit_ltj == True:
+    #     resp = resp_facebook
+    # else:
     resp = {"fulfillmentText": resp_text}
     return JsonResponse(resp, status=200, content_type="application/json", safe=False)
     # return Response(json.dumps(resp), status=200, content_type="application/json")
