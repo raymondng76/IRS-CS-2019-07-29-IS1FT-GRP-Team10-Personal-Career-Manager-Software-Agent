@@ -5,7 +5,7 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import View, CreateView, TemplateView, ListView, DetailView, FormView
 from django.views.decorators.csrf import csrf_exempt
 from Level_Up_App.forms import NewUserForm, QuestionaireForm
-from Level_Up_App.models import User, Questionaire, Course, Job, Skill, CareerPathMap, CareerSkills
+from Level_Up_App.models import User, Questionaire, Course, Job, Skill, CareerPathMap, CareerSkills, ChatbotVar
 from Level_Up_App.courserecommendationrules import SkillGapsFact, CourseRecommender, recommendedcourses
 from Level_Up_App.jobrecommendationrules import getJobRecommendation
 from Level_Up_App.careerknowledgegraph import CareerPathKnowledgeGraph
