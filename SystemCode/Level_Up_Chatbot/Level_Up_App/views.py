@@ -28,6 +28,7 @@ careerPref = ""
 courseSkillRecommend = list()
 jobSkillRecommend = list()
 visit_ltj = False
+resp_facebook = ""
 
 # json formatter
 # resp_facebook = ""
@@ -36,39 +37,77 @@ visit_ltj = False
 def list_to_json():
     global visit_ltj
     visit_ltj = True
-    resp_facebook = {"message":{
-        "attachment":{
-            "type":"template",
-                "payload": {
-                    "template_type":"generic",
-                    "elements":[
-                        {
-                            "title":"testing card title",
-                            "image_url":"https://www.iss.nus.edu.sg/Sitefinity/WebsiteTemplates/ISS/App_Themes/ISS/Images/branding-iss.png",
-                            "subtitle":"subtitle text",
-                            "default_action": {
-                                "type":"web_url",
-                                "url": "https://www.iss.nus.edu.sg/",
-                                "messenger_extensions": True,
-                                "webview_height_ration": "FULL",
-                            },
-                            "buttons":[
-                                {
-                                    "type":"web_url",
-                                    "url":"https://www.iss.nus.edu.sg/",
-                                    "title":"View Website"
-                                },{
-                                    "type":"postback",
-                                    "title":"Start Chatting",
-                                    "payload":"DEVELOPER_DEFINED_PAYLOAD"
-                                }
-                            ]
-                        }
-                    ]
-                }
-            }
+    resp_facebook = {
+      "fulfillmentText": "This is a text response",
+      "fulfillmentMessages": [
+          {
+          "card": {
+            "title": "Job Title",
+            "subtitle": "Company",
+            "imageUri": "https://assistant.google.com/static/images/molecule/Molecule-Formation-stop.png",
+            "buttons": [
+              {
+                "text": "Job URL",
+                "postback": "https://assistant.google.com/"
+              }
+            ]
+          }
+        },{
+          "card": {
+            "title": "Job Title",
+            "subtitle": "Company",
+            "imageUri": "https://assistant.google.com/static/images/molecule/Molecule-Formation-stop.png",
+            "buttons": [
+              {
+                "text": "Job URL",
+                "postback": "https://assistant.google.com/"
+              }
+            ]
+          }
         }
+      ]
     }
+    
+    
+    
+    ## COURSE
+    
+    # {
+    #   "fulfillmentText": "This is a text response",
+    #   "fulfillmentMessages": [
+    #       {
+    #       "card": {
+    #         "title": "Course Title",
+    #         "subtitle": "Course Code",
+    #         "imageUri": "https://assistant.google.com/static/images/molecule/Molecule-Formation-stop.png",
+    #         "buttons": [
+    #           {
+    #             "text": "Course URL",
+    #             "postback": "https://assistant.google.com/"
+    #           }
+    #         ]
+    #       }
+    #     }
+    #   ]
+    # }
+
+    # data Types
+    ## COURSE
+    ## Course_Code
+    ## Course Title
+    ## Course URL
+
+    ## JOB
+    ## Job Title
+    ## Job Min. Education Level
+    ## Job Min Salary
+    ## Job Max Salary
+    ## Job Company
+    ## Job URL
+
+    ## SIGNUP
+    ## Signup URL
+
     return resp_facebook
 
 # Create your views here.
@@ -357,7 +396,7 @@ def webhook(request):
             #Lead to Career Aspiration Intent
             resp_text = "D_ElicitEmployDetails:JECEGG - I have noted on your employment details. If given an opportunity, who do you aspire to be?"
         # elif persona == "Unemployed Job Seeker" or persona == "Eager Learner":
-        elif getPersona() == PersonaType.UNEMPLOYED_JOB_SEEKER.name or getPersona() == PersonaType.EAGER_LEARNER.name
+        elif getPersona() == PersonaType.UNEMPLOYED_JOB_SEEKER.name or getPersona() == PersonaType.EAGER_LEARNER.name:
             # get competencies question function
             #Lead to Competencies Intent
             resp_text = "D_ElicitEmployDetails:UJS - I have noted your employment details. Next, would you share with me more about your competency?"
@@ -371,17 +410,17 @@ def webhook(request):
         careerPref = req["queryResult"]["parameters"]["career_type"]
         setCareerPref(careerPref)
         # if careerPref == "management":
-        if getCareerPref() == CareerType.MANAGEMENT.name
+        if getCareerPref() == CareerType.MANAGEMENT.name:
             resp_text = "I will suggest you gunning for the Managing Director. Sounds good?"
             careerEndGoalPosition = "Managing Director"
             setCareerEndGoalPosition(careerEndGoalPosition)
         # elif careerPref == "sales":
-        elif getCareerPref() == CareerType.SALES.name
+        elif getCareerPref() == CareerType.SALES.name:
             resp_text = "I will recommend to aim for the Sales Director. Do you think that's great?"
             careerEndGoalPosition = "Sales Director"
             setCareerEndGoalPosition(careerEndGoalPosition)
         # elif careerPref == "technical":
-        elif getCareerPref() == CareerType.TECHNICAL.name
+        elif getCareerPref() == CareerType.TECHNICAL.name:
             resp_text = "I will suggest you to become either a Technical Director or CTO. Yes?"
             careerEndGoalPosition = "Chief Technical Officer"
             setCareerEndGoalPosition(careerEndGoalPosition)
@@ -522,7 +561,13 @@ def webhook(request):
     # if visit_ltj == True:
     #     resp = resp_facebook
     # else:
-    resp = {"fulfillmentText": resp_text}
+    
+    # resp = {
+    #     "fulfillmentText": resp_text,
+    #     "fulfillmentMessages": [
+    #     {resp_facebook}
+    #     ]}
+    
     return JsonResponse(resp, status=200, content_type="application/json", safe=False)
     # return Response(json.dumps(resp), status=200, content_type="application/json")
 
