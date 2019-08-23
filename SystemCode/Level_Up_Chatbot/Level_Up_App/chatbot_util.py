@@ -72,14 +72,14 @@ def jobsrecommendation_with_endgoal(currPos, endGoal, userCompetence):
         return list()
     competenceList = elicit_competence_with_endgoal(currPos, endGoal)
     competenceList.append(userCompetence)
-    return getJobRecommendation(competenceList)
+    return wrapJobRecommendation(getJobRecommendation(competenceList))
 
 def jobsrecommendation_without_endgoal(currPos, userCompetence):
     if not userCompetence:
         return list()
     competenceList = elicit_competence_without_endgoal(currPos)
     competenceList.append(userCompetence)
-    return getJobRecommendation(competenceList)
+    return wrapJobRecommendation(getJobRecommendation(competenceList))
 #****************************************
 # Methods for jobs recommendation : END
 #****************************************
@@ -91,14 +91,14 @@ def courserecommendation_with_endgoal(currPos, endGoal, userCompetence):
     if set(userCompetence) == set(origialCompetenceList):
         return list()
     remainList = [skills for skills in userCompetence if skills not in origialCompetenceList]
-    return getCourseRecommendation(remainList)
+    return wrapCourseRecommendation(getCourseRecommendation(remainList))
 
 def courserecommendation_without_endgoal(currPos, userCompetence):
     origialCompetenceList = elicit_competence_without_endgoal(currPos)
     if set(userCompetence) == set(origialCompetenceList):
         return list()
     remainList = [skills for skills in userCompetence if skills not in origialCompetenceList]
-    return getCourseRecommendation(remainList)
+    return wrapCourseRecommendation(getCourseRecommendation(remainList))
 
 def getCourseRecommendation(skillgap):
     engine = CourseRecommender()
@@ -249,16 +249,51 @@ def getChatbotVar():
 #*****************************************
 
 #*********************************************
-# Methods for Facebook button warpper : START
+# Methods for Facebook button wrapper : START
 #*********************************************
-# def warpCourseRecommendation(courseList):
-#     resp = {}
-#     resp['fulfillmentText'] = "Error showing course recommendation!"
-#     resp['fulfillmentMessages'] = {}
-#     for course in courseList:
-#         resp['fulfillmentMessages']['card'] = {
-#             "title":
-#         }
+def wrapCourseRecommendation(courseList):
+    resp = {}
+    resp['fulfillmentText'] = "Error showing course recommendation!"
+    resp['fulfillmentMessages'] = []
+    for course in courseList:
+        resp['fulfillmentMessages'].append(
+        buildCard(
+            title=course.title,
+            subtitle=course.coursecode,
+            imageUrl="https://assistant.google.com/static/images/molecule/Molecule-Formation-stop.png",
+            cardText="Course Link",
+            cardUrl=course.URL
+        ))
+    return resp
+
+def wrapJobRecommendation(jobList):
+    resp = {}
+    resp['fulfillmentText'] = "Error showing job recommendation!"
+    resp['fulfillmentMessages'] = []
+    for job in jobList:
+        resp['fulfillmentMessages'].append(
+        buildCard(
+            title=job.title,
+            subtitle=job.company,
+            imageUrl="https://assistant.google.com/static/images/molecule/Molecule-Formation-stop.png",
+            cardText="Job Link",
+            cardUrl=job.URL
+        ))
+    return resp
+
+def buildCard(title, subtitle, imageUrl, cardText, cardUrl):
+    card = {
+        "title": title,
+        "subtitle": subtitle,
+        "imageUri": imageUrl,
+        "buttons":[
+            {
+                "text": cardText,
+                "postback": cardUrl
+            }
+        ]
+    }
+    return card
 #*********************************************
-# Methods for Facebook button warpper : END
+# Methods for Facebook button wrapper : END
 #*********************************************
