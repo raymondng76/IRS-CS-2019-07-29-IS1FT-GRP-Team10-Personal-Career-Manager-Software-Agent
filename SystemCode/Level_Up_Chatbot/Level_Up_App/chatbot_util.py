@@ -278,22 +278,70 @@ def wrapJobRecommendation(jobList):
             imageUrl="https://assistant.google.com/static/images/molecule/Molecule-Formation-stop.png",
             cardText="Job Link",
             cardUrl=job.URL
-        ))
+        ))  
     return resp
 
 def buildCard(title, subtitle, imageUrl, cardText, cardUrl):
     card = {
-        "title": title,
-        "subtitle": subtitle,
-        "imageUri": imageUrl,
-        "buttons":[
-            {
-                "text": cardText,
-                "postback": cardUrl
-            }
-        ]
+        "card": {
+            "title": title,
+            "subtitle": subtitle,
+            "imageUri": imageUrl,
+            "buttons":[
+                {
+                    "text": cardText,
+                    "postback": cardUrl
+                }
+            ]
+        }
     }
     return card
 #*********************************************
 # Methods for Facebook button wrapper : END
+#*********************************************
+
+#*********************************************
+# Methods for Facebook Cards Text : START
+#*********************************************
+
+def signUp():
+    resp = {}
+    resp['fulfillmentText'] = "Error showing signup button!"
+    resp['fulfillmentMessages'] = [
+        {
+            "card": {
+            "title": "Level Up",
+            "subtitle": "Your Personal Career Coach",
+            "imageUri": "https://assistant.google.com/static/images/molecule/Molecule-Formation-stop.png",
+            "buttons":[
+                    {
+                    "text": "Sign Up Here!",
+                    "postback": "https://www.google.com/"
+                    }
+                ]
+            }
+        }
+    ]
+    return resp
+
+def cardsAppend(cardsRec, appendText):
+    respText = cardsRec
+    cardsRec['fulfillmentMessages'].append({
+        "text":{
+            "text": [appendText]
+            }
+        },)
+    return respText
+
+def cardsWrap(cardsRec, insertText):
+    respText = cardsRec
+    cardsRec['fulfillmentMessages'].insert(0,{
+        "text":{
+            "text": [insertText]
+            }
+        },)
+    return respText
+
+#*********************************************
+# Methods for Facebook Cards Text : END
 #*********************************************
