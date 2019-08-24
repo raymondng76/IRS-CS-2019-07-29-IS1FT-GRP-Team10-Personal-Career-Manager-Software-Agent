@@ -10,9 +10,11 @@ def getJobCompetency(jobtitle):
     jobcompetency = list()
     careerpos = CareerPosition.objects.get(name=jobtitle)
     filterCareerPos = CareerSkills.objects.get(careerpos=careerpos)
-    for skill in filterCareerPos.skillRequired.all():
+    skillreq = filterCareerPos.skillRequired.all()
+    if len(skillreq) > 20:
+        skillreq = skillreq[:20]
+    for skill in skillreq:
         jobcompetency.append(str(skill))
-    print(jobcompetency)
     return jobcompetency
 
 def getHighestDemandJob():
