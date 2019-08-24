@@ -252,10 +252,13 @@ def getChatbotVar():
 # Methods for Facebook button wrapper : START
 #*********************************************
 def wrapCourseRecommendation(courseList):
+    clist = courseList
+    if len(courseList) > 10:
+        clist = courseList[:10]
     resp = {}
     resp['fulfillmentText'] = "Error showing course recommendation!"
     resp['fulfillmentMessages'] = []
-    for course in courseList:
+    for course in cList:
         resp['fulfillmentMessages'].append(
         buildCard(
             title=course.title,
@@ -267,10 +270,13 @@ def wrapCourseRecommendation(courseList):
     return resp
 
 def wrapJobRecommendation(jobList):
+    jlist = jobList
+    if len(jobList) > 10:
+        jlist = jobList[:10]
     resp = {}
     resp['fulfillmentText'] = "Error showing job recommendation!"
     resp['fulfillmentMessages'] = []
-    for job in jobList:
+    for job in jlist:
         resp['fulfillmentMessages'].append(
         buildCard(
             title=job.title,
@@ -278,7 +284,7 @@ def wrapJobRecommendation(jobList):
             imageUrl="https://assistant.google.com/static/images/molecule/Molecule-Formation-stop.png",
             cardText="Job Link",
             cardUrl=job.URL
-        ))  
+        ))
     return resp
 
 def buildCard(title, subtitle, imageUrl, cardText, cardUrl):
