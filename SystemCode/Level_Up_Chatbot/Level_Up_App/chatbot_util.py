@@ -278,22 +278,20 @@ def wrapJobRecommendation(jobList):
             imageUrl="https://assistant.google.com/static/images/molecule/Molecule-Formation-stop.png",
             cardText="Job Link",
             cardUrl=job.URL
-        ))  
+        ))
     return resp
 
 def buildCard(title, subtitle, imageUrl, cardText, cardUrl):
     card = {
-        "card": {
-            "title": title,
-            "subtitle": subtitle,
-            "imageUri": imageUrl,
-            "buttons":[
-                {
-                    "text": cardText,
-                    "postback": cardUrl
-                }
-            ]
-        }
+        "title": title,
+        "subtitle": subtitle,
+        "imageUri": imageUrl,
+        "buttons":[
+            {
+                "text": cardText,
+                "postback": cardUrl
+            }
+        ]
     }
     return card
 #*********************************************
