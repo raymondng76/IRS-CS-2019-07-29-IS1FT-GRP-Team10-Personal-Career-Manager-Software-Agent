@@ -223,7 +223,7 @@ def getCareerPref():
     return cbv.get_careerPref()
 def setCareerPref(careerPref):
     cbv = getChatbotVar()
-    cbv.set_careerPref(careerPref)
+    cbv.set_careerPref(careerPref.upper())
     cbv.save()
 
 def getCourseSkillRecommendation():
@@ -258,7 +258,7 @@ def wrapCourseRecommendation(courseList):
     resp = {}
     resp['fulfillmentText'] = "Error showing course recommendation!"
     resp['fulfillmentMessages'] = []
-    for course in cList:
+    for course in clist:
         resp['fulfillmentMessages'].append(
         buildCard(
             title=course.title,
