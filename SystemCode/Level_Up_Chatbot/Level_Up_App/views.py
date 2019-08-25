@@ -341,6 +341,7 @@ def webhook(request):
             resp_text = "I will suggest you to become either a Technical Director or CTO. Yes?"
             careerEndGoalPosition = "Chief Technical Officer"
             setCareerEndGoalPosition(careerEndGoalPosition)
+    
     elif intent_name == "K_GetCareerPref - yes":
         if getPersona() == PersonaType.UNEMPLOYED_JOB_SEEKER.name:
             #resp_career_roadmap = getCareerPath(currentPosition, careerEndGoalPosition)
@@ -354,12 +355,12 @@ def webhook(request):
         else:
             # resp_career_roadmap = getCareerPath(currentPosition, careerEndGoalPosition)
             # elicit competencies based on careerEndGoalPosition
-            competencies = elicit_competence_with_endgoal(currentPosition, careerEndGoalPosition)
-            resp_text = "resp_career_roadmap" + f"D_GetCareerPreferences - yes - Great to hear that. Based on the role, do you have the following competencies today? {', '.join(str(x) for x in competencies)}"
+            # competencies = elicit_competence_with_endgoal(currentPosition, careerEndGoalPosition)
+            resp_text = "resp_career_roadmap + competencies prompt" #+ f"D_GetCareerPreferences - yes - Great to hear that. Based on the role, do you have the following competencies today? {', '.join(str(x) for x in competencies)}"
 
     elif intent_name == "K_GetCareerPref - no":
-        resp_career_roadmap = elicit_competence_without_endgoal(currentPosition)
-        resp_text = "D_GetCareerPreferences - no - I'm sorry I cannot serve you better today we are still upgrading this function. Is there any other things that I can help you with?"
+        competencies = elicit_competence_without_endgoal(currentPosition)
+        resp_text = f"I think I can value add more in terms of career advice. Can I check with you if you have this list of competencies: {', '.join(str(x) for x in competencies)}"
 
 
     # Get Aspiration Intent Combined
@@ -420,10 +421,12 @@ def webhook(request):
         
         # IF PERSONA == JADED EMPLOYEE OR GO-GETTER
         if getPersona() == PersonaType.JADED_EMPLOYEE.name or getPersona() == PersonaType.GO_GETTER.name:
-            #resp = jobsrecommendation_with_endgoal(getCurrentPosition(), getCareerEndGoalPosition(), getCurrentSkillset())
-            resp = cardsWrap(resp, "That's some awesome skills you have, here are some jobs you might find interesting:")
-            resp = cardsAppend(resp, "I think I can show you some courses that might help improve you skillsets too. Would you be interested to find out more?")
-            return JsonResponse(resp, status=200, content_type="application/json", safe=False)
+            # resp = jobsrecommendation_with_endgoal(getCurrentPosition(), getCareerEndGoalPosition(), getCurrentSkillset())
+            # resp = cardsWrap(resp, "That's a great set of skills you have, here are some jobs you might find interesting:")
+            # resp = cardsAppend(resp, "I think I can show you some courses that might help improve you skillsets too. Would you be interested to find out more?")
+            # return JsonResponse(resp, status=200, content_type="application/json", safe=False)
+            resp_text = "Jobs Recommendation - Show Courses "
+        
         # IF PERSONA == UNEMPLOYED JOB SEEKER
         elif getPersona() == PersonaType.UNEMPLOYED_JOB_SEEKER.name:
             resp = jobsrecommendation_without_endgoal(getCurrentPosition(), getCurrentSkillset())
@@ -433,10 +436,12 @@ def webhook(request):
             
         # IF PERSONA == CURIOUS EXPLORER
         elif getPersona() == PersonaType.CURIOUS_EXPLORER.name:
-            resp_text = "That's a great set of skills, here are some jobs you might find interesting."
-            # resp_courses = courserecommendation_with_endgoal(getCurrentPosition(), getCareerEndGoalPosition(), getCurrentSkillset())
-            # return JsonResponse(resp_courses, status=200, content_type="application/json", safe=False)
-            pass
+            resp_text = "That's some awesome skills you have, here are some courses that might be interesting for you."
+            # resp = courserecommendation_with_endgoal(getCurrentPosition(), getCareerEndGoalPosition(), getCurrentSkillset())
+            # resp = cardsWrap(resp, "That's some awesome skills you have, here are some courses that might be interesting for you.")
+            # resp = cardsAppend(resp, "I think there are some jobs waiting for talented people like you. Would you be interested to find out more?")
+            # return JsonResponse(resp, status=200, content_type="application/json", safe=False)
+        
         # IF PERSONA == EAGER LEARNER
         else:
             resp = courserecommendation_without_endgoal(getCurrentPosition(), getCurrentSkillset())
@@ -446,13 +451,32 @@ def webhook(request):
 
     # FOLLOW UP TO COMPETENCIES INTENT - COURSES RECOMMENDATION
     elif intent_name == "Wang_elicit_comp - yes":
-        resp_text = "Here are some courses that will help improve your current standing and further your knowledge."
-        # call function and return skills not matching currentSkillSet
-        resp_text = resp_text + "Sign up HERE so that we can notify you when we find more jobs suitable for you!"
+        if getPersona() == PersonaType.JADED_EMPLOYEE.name or getPersona() == PersonaType.GO_GETTER.name:
+            resp_text = "Here are some courses that will help improve your current standing and further your knowledge."
+            # resp = courserecommendation_with_endgoal(getCurrentPosition(), getCareerEndGoalPosition(), getCurrentSkillset())
+            # resp = cardsWrap(resp, "Here are some courses that will help improve your current standing and further your knowledge.")
+            # resp = cardsAppend(resp, "Do you want to sign up so that we can notify you when we find more suitable jobs or courses for you!")
+            # return JsonResponse(resp, status=200, content_type="application/json", safe=False)
+            resp_text = resp_text + "Sign up HERE so that we can notify you when we find more jobs suitable for you!"
+        else:
+            # resp = jobsrecommendation_with_endgoal(getCurrentPosition(), getCareerEndGoalPosition(), getCurrentSkillset())
+            # resp = cardsWrap(resp, "That's some awesome skills you have, here are some jobs you might find interesting:")
+            # resp = cardsAppend(resp, "I think I can show you some courses that might help improve you skillsets too. Would you be interested to find out more?")
+            # return JsonResponse(resp, status=200, content_type="application/json", safe=False)
+            resp_text = "jobs recommendation + signup"
+            pass
+    elif intent_name == "Wang_elicit_comp - yes - yes":
+        resp = signUp()
+        return JsonResponse(resp, status=200, content_type="application/json", safe=False)
+
     elif intent_name == "Wang_elicit_comp - no":
         if getPersona() == PersonaType.UNEMPLOYED_JOB_SEEKER.name:
             # GUIDE TO PREFERENCE
             resp_text = "That's alright. Perhaps you can share with me if you enjoy management, technical or people roles and I can advise you a direction."
+        elif getPersona() == PersonaType.CURIOUS_EXPLORER.name or getPersona() == PersonaType.GO_GETTER.name:
+            resp = signUp()
+            resp = cardsWrap(resp, "Sure, no worries. We hope to have helped you! Sign up here to get updated!")
+            return JsonResponse(resp, status=200, content_type="application/json", safe=False)
         else:
             resp = signUp()
             return JsonResponse(resp, status=200, content_type="application/json", safe=False)
