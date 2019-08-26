@@ -59,10 +59,16 @@ def elicit_competence_with_endgoal(currPos, endGoal):
     # Get next pos from career path
     nextpos = careerPath[1]
     # Get list of competencies to ask user
-    return getListofCompetencetoAskUserWithCRoadMap(currPos, nextpos)
+    compList = getListofCompetencetoAskUserWithCRoadMap(currPos, nextpos)
+    if len(compList) > 20:
+        compList = compList[:20]
+    return compList
 
 def elicit_competence_without_endgoal(currPos):
-    return getListofCompetencetoAskUserWithoutCRoadMap(currPos)
+    compList = getListofCompetencetoAskUserWithoutCRoadMap(currPos)
+    if len(compList) > 20:
+        compList = compList[:20]
+    return compList
 #****************************************
 # Methods for elicit competence : END
 #****************************************
