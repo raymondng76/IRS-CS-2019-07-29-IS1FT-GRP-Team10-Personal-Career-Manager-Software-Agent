@@ -352,7 +352,14 @@ def webhook(request):
             resp = courserecommendation_with_endgoal(getCurrentPosition(), getCareerEndGoalPosition(), getCurrentSkillset())
             resp = cardsWrap(resp, resp_text)
             resp = cardsAppend(resp, "Will you be interested to signup with us to learn more?")
-            #resp_text = resp_text + " course recommendations"
+            return JsonResponse(resp, status=200, content_type="application/json", safe=False)
+        elif getPersona() == PersonaType.EAGER_LEARNER.name:
+            cost, resp_career_roadmap = getCareerPath(getCurrentPosition(), getCareerEndGoalPosition())
+            resp_text = f"This will be your career roadmap: {' to '.join(str(x) for x in resp_career_roadmap)} and it will take you {cost} months." + "In line with the roadmap, here are some jobs you might find interesting to consider for your next role."
+            # ELICIT JOBS RECOMMENDATIONS
+            resp = jobsrecommendation_with_endgoal(getCurrentPosition(), getCareerEndGoalPosition(), getCurrentSkillset())
+            resp = cardsWrap(resp, resp_text)
+            resp = cardsAppend(resp, "Would you like to be updated for more jobs and courses when they are available?")
             return JsonResponse(resp, status=200, content_type="application/json", safe=False)
         else:
             cost, resp_career_roadmap = getCareerPath(getCurrentPosition(), getCareerEndGoalPosition())
@@ -369,13 +376,21 @@ def webhook(request):
 
     elif intent_name == "K_GetCareerPref - no":
         competencies = elicit_competence_without_endgoal(currentPosition)
-        resp_text = f"I think I can value add more in terms of career advice. Can I check with you if you have this list of competencies: {', '.join(str(x) for x in competencies)}"
+        
         if getPersona() == PersonaType.UNEMPLOYED_JOB_SEEKER.name:
             resp_text = "Sure, no worries. I hope I have helped you. Maybe you can consider some of these courses to improve your skills?"
             resp = courserecommendation_without_endgoal(getCurrentPosition(), getCurrentSkillset())
             resp = cardsWrap(resp, resp_text)
             resp = cardsAppend(resp, "Will you be interested to signup with us to learn more?")
             return JsonResponse(resp, status=200, content_type="application/json", safe=False)
+        elif getPersona() == PersonaType.EAGER_LEARNER.name:
+            resp_text = "Sure, no worries. I hope I have helped you. Maybe you can consider some of these jobs next?"
+            resp = jobsrecommendation_without_endgoal(getCurrentPosition(), getCurrentSkillset())
+            resp = cardsWrap(resp, resp_text)
+            resp = cardsAppend(resp, "Would you like to be updated for more jobs and courses when they are available?")
+            return JsonResponse(resp, status=200, content_type="application/json", safe=False)
+        else:
+            resp_text = f"I think I can value add more in terms of career advice. Can I check with you if you have this list of competencies: {', '.join(str(x) for x in competencies)}"
 
     elif intent_name == "K_GetCareerPref - no - yes":
         resp_text = "Great! Can I have your full name and email address?"
