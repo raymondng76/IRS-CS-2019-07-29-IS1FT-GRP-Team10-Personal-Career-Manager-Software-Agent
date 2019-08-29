@@ -235,7 +235,7 @@ def webhook(request):
             # Lead to Competencies Intent
             resp_text = "I have noted your employment details."
             competencies = elicit_competence_without_endgoal(currentPosition)
-            resp_text = resp_text + f"I think I can value add more in terms of career advice. Can I check with you if you have this list of competencies: {', '.join(str(x) for x in competencies)}"
+            resp_text = resp_text + f"I think I can value add more in terms of career advice. May I check with you, which of the following competencies do you have? : {', '.join(str(x) for x in competencies)}"
     # Elicit Career Preferences Intent Combined
     elif intent_name == "D_ElicitEmployDetails - no":
         resp_text = "That's alright. Perhaps you can share with me if you enjoy management, technical or people roles and I can advise you a direction."
@@ -283,7 +283,7 @@ def webhook(request):
         resp_text = "Great! Can I have your full name and email address?"
     elif intent_name == "K_GetCareerPref - no":
         competencies = elicit_competence_without_endgoal(currentPosition)
-        
+
         if getPersona() == PersonaType.UNEMPLOYED_JOB_SEEKER.name:
             resp_text = "Sure, no worries. I hope I have helped you. Maybe you can consider some of these courses to improve your skills?"
             resp = courserecommendation_without_endgoal(getCurrentPosition(), getCurrentSkillset())
@@ -297,7 +297,7 @@ def webhook(request):
             resp = cardsAppend(resp, "Would you like to be updated for more jobs and courses when they are available?")
             return JsonResponse(resp, status=200, content_type="application/json", safe=False)
         else:
-            resp_text = f"I think I can value add more in terms of career advice. Can I check with you if you have this list of competencies: {', '.join(str(x) for x in competencies)}"
+            resp_text = f"I think I can value add more in terms of career advice. May I check with you, which of the following competencies do you have? : {', '.join(str(x) for x in competencies)}"
     elif intent_name == "K_GetCareerPref - no - yes":
         resp_text = "Great! Can I have your full name and email address?"
     # Get Aspiration Intent Combined
@@ -312,7 +312,7 @@ def webhook(request):
             ## ELICIT COMPETENCY WITH ROADMAP FUNCTION
             competencies = elicit_competence_with_endgoal(getCurrentPosition(), getCareerEndGoalPosition())
             print(competencies)
-            resp_text = resp_text + f"I think I can value add more in terms of career advice. Can I check with you if you have this list of competencies: {', '.join(str(x) for x in competencies)}"
+            resp_text = resp_text + f"I think I can value add more in terms of career advice. May I check with you, which of the following competencies do you have? : {', '.join(str(x) for x in competencies)}"
         elif getPersona() == PersonaType.UNEMPLOYED_JOB_SEEKER.name:
             # ELICIT COURSE RECOMMENDATIONS
             resp_text = resp_text + "You can consider some of these courses to achieve your goal!"
