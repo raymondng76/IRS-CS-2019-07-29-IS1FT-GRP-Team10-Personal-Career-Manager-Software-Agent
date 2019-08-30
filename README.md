@@ -1,7 +1,7 @@
 
 ## SECTION 1 : PROJECT TITLE
 
-### Personal Career Manager Software Agent Chatbot
+### Personal Career Manager Software Agent
 
 ---
 ## SECTION 2 : EXECUTIVE SUMMARY / PAPER ABSTRACT
