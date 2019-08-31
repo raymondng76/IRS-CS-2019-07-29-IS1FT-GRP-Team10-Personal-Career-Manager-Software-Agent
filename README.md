@@ -14,7 +14,7 @@ The team has successfully implemented a Personal Career Manager Software Agent w
 | :------------ |:---------------:| :-----| :-----|
 | Alfred Tay Wenjie | A0198541W | Project Scoping, Persona Identification, Design Conversation Flow and Structure, Dialogflow Intents, Entities and Context, Fulfilment Coding, Testing and Fine-tuning, Report | |
 | Kenneth Goh Chia Wei | A0198544N | Dialogflow Intents, Entities and Context, Intent functions, Facebook Integration, Report, Chatbot utility function, Test Cases Generation | |
-| Tan Heng Han | A0198502B | o	Dialogflow Intents, Entities, Context and Synonyms, Intent Backend Functions, Data Processing, Report, Testing, Video | |
+| Tan Heng Han | A0198502B | Dialogflow Intents, Entities, Context and Synonyms, Intent Backend Functions, Data Processing, Report, Testing, Video | |
 | Wang Zilong | A0198523W | Dialogflow, knowledge discovery, database, backend function | |
 | Raymond Ng Boon Cheong | A0198543R | Dialogflow, Django server, chatbot utility functions, database, user guide, system architecture design, system integration | |
 
